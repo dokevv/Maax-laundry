@@ -1,0 +1,21 @@
+name: maxx_laundry
+description: "Maxx Laundry - aplikasi kasir laundry Legah Group (Android)."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.4.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  webview_flutter: ^4.10.0
+  webview_flutter_android: ^4.3.0
+  print_bluetooth_thermal: ^1.1.6
+  permission_handler: ^11.3.1
+  shared_preferences: ^2.3.2
+  image_picker: ^1.1.2
+  url_launcher: ^6.3.1
+
+flutter:
+  uses-material-design: true

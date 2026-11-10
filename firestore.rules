@@ -1,0 +1,61 @@
+rules_version = '2';
+// Aturan keamanan Maxx Laundry.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function email()    { return request.auth != null && request.auth.token.email != null ? request.auth.token.email.lower() : ''; }
+    function isOwner()  { return email() in ['pings.hellokitty@gmail.com']; }
+    function isOutlet() { return email() in ['outlet@maxxlaundry.id']; }
+    function isStaff()  { return isOwner() || isOutlet(); }
+
+    // Harga, kasir, PIN: hanya owner yang boleh mengubah.
+    match /settings/{id} {
+      allow read: if isStaff();
+      allow write: if isOwner();
+    }
+
+    // Jejak audit: tablet hanya bisa MENAMBAH, tidak bisa membaca, mengubah, atau menghapus.
+    match /audit/{id} {
+      allow read: if isOwner();
+      allow create: if isStaff();
+      allow update, delete: if false;
+    }
+
+    // Cucian: tidak bisa dihapus siapa pun. Dari tablet, rincian & total yang sudah tersimpan
+    // tidak bisa diubah, dan cucian yang sudah dibatalkan tidak bisa dihidupkan lagi.
+    match /orders/{id} {
+      allow read, create: if isStaff();
+      allow update: if isOwner() || (isOutlet()
+        && resource.data.status != 'batal'
+        && request.resource.data.no == resource.data.no
+        && request.resource.data.total == resource.data.total
+        && request.resource.data.items == resource.data.items
+        && request.resource.data.createdAt == resource.data.createdAt);
+      allow delete: if false;
+    }
+
+    // Pengeluaran: tidak bisa dihapus; yang sudah dibatalkan tidak bisa diubah dari tablet.
+    match /expenses/{id} {
+      allow read, create: if isStaff();
+      allow update: if isOwner() || (isOutlet() && resource.data.get('voided', false) != true);
+      allow delete: if false;
+    }
+
+    // Shift: yang sudah ditutup tidak bisa diubah dari tablet.
+    match /shifts/{id} {
+      allow read, create: if isStaff();
+      allow update: if isOwner() || (isOutlet() && resource.data.endAt == '');
+      allow delete: if false;
+    }
+
+    match /customers/{id} {
+      allow read, create, update: if isStaff();
+      allow delete: if isOwner();
+    }
+
+    // Foto bukti & timbangan: tidak bisa diganti atau dihapus.
+    match /proofs/{id} {
+      allow read, create: if isStaff();
+      allow update, delete: if false;
+    }
+  }
+}

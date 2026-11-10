@@ -1,0 +1,1535 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Maxx Laundry</title>
+<meta name="theme-color" content="#0B0B0D">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Maxx Laundry">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="favicon.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<script src="config.js"></script>
+<script type="module" src="backend.js"></script>
+<style>
+  :root {
+    --pink: #FF4FA3; --pink-soft: rgba(255,79,163,.16);
+    --bg: #0B0B0D; --s1: #17171B; --s2: #222228; --border: #2E2E36;
+    --text: #FFFFFF; --muted: #A9A9B4;
+    --ok: #4ADE80; --warn: #FBBF24; --bad: #F87171; --info: #60A5FA; --violet: #C4B5FD;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; background: var(--bg); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  body { padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); }
+  button { font: inherit; color: inherit; cursor: pointer; }
+  input, select, textarea { font: inherit; }
+
+  header { position: sticky; top: 0; z-index: 20; background: rgba(11,11,13,.95); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
+  .bar { display: flex; align-items: center; gap: 12px; padding: 12px 16px 8px; max-width: 1200px; margin: 0 auto; }
+  .logo { color: var(--pink); font-weight: 900; letter-spacing: 3px; font-size: 22px; line-height: 1; }
+  .logo small { display: block; font-size: 9px; letter-spacing: 2.5px; font-weight: 700; margin-top: 4px; opacity: .85; }
+  .bar .spacer { flex: 1; }
+  nav { display: flex; gap: 6px; overflow-x: auto; padding: 0 16px 10px; max-width: 1200px; margin: 0 auto; scrollbar-width: none; }
+  nav::-webkit-scrollbar { display: none; }
+  nav button { flex: none; border: 1px solid var(--border); background: var(--s1); border-radius: 999px; padding: 9px 16px; font-size: 14px; font-weight: 600; color: var(--muted); }
+  nav button.active { background: var(--pink); border-color: var(--pink); color: #fff; }
+  nav button .n { display: inline-block; min-width: 20px; padding: 0 6px; margin-left: 6px; border-radius: 10px; background: rgba(255,255,255,.18); font-size: 12px; }
+
+  main { max-width: 1200px; margin: 0 auto; padding: 16px 16px 90px; }
+  h2 { font-size: 22px; margin: 4px 0; }
+  h3 { font-size: 16px; margin: 0; }
+  .sub { color: var(--muted); font-size: 13px; margin: 0 0 14px; }
+  .muted { color: var(--muted); }
+  .small { font-size: 12px; }
+  .row { display: flex; align-items: center; gap: 10px; }
+  .wrap { flex-wrap: wrap; }
+  .spacer { flex: 1; }
+  .card { background: var(--s1); border: 1px solid var(--border); border-radius: 16px; padding: 16px; }
+  .grid { display: grid; gap: 12px; }
+  .g-stats { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+  .g-2 { grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); }
+  .stat span { color: var(--muted); font-size: 13px; display: block; }
+  .stat b { display: block; font-size: 28px; font-weight: 900; margin-top: 4px; }
+  .stat em { font-style: normal; color: var(--muted); font-size: 12px; }
+  .money b { font-size: 22px; }
+
+  .btn { border: 0; border-radius: 12px; padding: 11px 16px; font-weight: 700; background: var(--pink); color: #fff; }
+  .btn.ghost { background: transparent; border: 1px solid var(--border); color: var(--text); }
+  .btn.outline { background: transparent; border: 1px solid var(--pink); color: var(--pink); }
+  .btn.danger { background: transparent; border: 1px solid var(--bad); color: var(--bad); }
+  .btn.ok { background: var(--ok); color: #062b12; }
+  .btn.sm { padding: 7px 12px; font-size: 13px; border-radius: 10px; }
+  .btn.lg { padding: 16px; font-size: 17px; border-radius: 14px; width: 100%; }
+  .btn:disabled { opacity: .4; cursor: default; }
+  .fab { position: fixed; right: max(16px, env(safe-area-inset-right)); bottom: calc(18px + env(safe-area-inset-bottom)); z-index: 30;
+    border: 0; border-radius: 18px; padding: 16px 20px; font-size: 16px; font-weight: 800; background: var(--pink); color: #fff; box-shadow: 0 8px 30px rgba(255,79,163,.35); }
+
+  .chips { display: flex; gap: 8px; overflow-x: auto; margin-bottom: 12px; scrollbar-width: none; }
+  .chips::-webkit-scrollbar { display: none; }
+  .chip { flex: none; border: 1px solid var(--border); background: var(--s2); border-radius: 999px; padding: 7px 14px; font-size: 13px; }
+  .chip.on { background: var(--pink-soft); border-color: var(--pink); color: var(--pink); font-weight: 700; }
+
+  .pill { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; white-space: nowrap; }
+  .st-masuk { background: rgba(169,169,180,.16); color: #D4D4DC; }
+  .st-proses { background: rgba(96,165,250,.16); color: var(--info); }
+  .st-siap { background: rgba(255,79,163,.16); color: var(--pink); }
+  .st-batal { background: rgba(248,113,113,.14); color: var(--bad); text-decoration: line-through; }
+  .st-diambil { background: rgba(74,222,128,.15); color: var(--ok); }
+  .pay-lunas { background: rgba(74,222,128,.15); color: var(--ok); }
+  .pay-dp { background: rgba(251,191,36,.15); color: var(--warn); }
+  .pay-belum { background: rgba(248,113,113,.14); color: var(--bad); }
+  .late { color: var(--bad); }
+
+  .order { display: block; width: 100%; text-align: left; background: var(--s1); border: 1px solid var(--border); border-radius: 16px; padding: 14px; }
+  .order .top { display: flex; align-items: center; gap: 8px; }
+  .order .no { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+  .order .name { font-weight: 800; font-size: 16px; margin-top: 6px; }
+  .order .items { color: var(--muted); font-size: 13px; margin-top: 2px; }
+  .order .bottom { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+  .order .total { font-weight: 800; }
+
+  .list-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-top: 1px solid var(--border); }
+  .list-row:first-child { border-top: 0; }
+  .list-row .info { flex: 1; min-width: 0; }
+  .list-row .info b { display: block; }
+  .list-row .info span { color: var(--muted); font-size: 12px; }
+  .amt-in { color: var(--ok); font-weight: 800; white-space: nowrap; }
+  .amt-out { color: var(--bad); font-weight: 800; white-space: nowrap; }
+  .thumb { width: 44px; height: 44px; border-radius: 8px; object-fit: cover; border: 1px solid var(--border); flex: none; }
+
+  .search { width: 100%; background: var(--s1); border: 1px solid var(--border); color: var(--text); border-radius: 14px; padding: 12px 14px; margin-bottom: 12px; }
+  .in { width: 100%; background: var(--s2); border: 1px solid var(--border); color: var(--text); border-radius: 12px; padding: 12px; }
+  textarea.in { resize: vertical; min-height: 60px; }
+  label.f { display: block; font-size: 13px; color: var(--muted); margin: 14px 0 6px; }
+  .seg { display: flex; gap: 6px; flex-wrap: wrap; }
+  .seg button { flex: 1; min-width: 80px; border: 1px solid var(--border); background: var(--s2); border-radius: 12px; padding: 11px 8px; font-weight: 600; font-size: 14px; }
+  .seg button.on { border-color: var(--pink); background: var(--pink-soft); color: var(--pink); }
+  .cat-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .cat-btns button { border: 1px solid var(--border); background: var(--s2); border-radius: 14px; padding: 16px 10px; font-size: 16px; font-weight: 800; }
+  .cat-btns button.on { border-color: var(--pink); background: var(--pink-soft); color: var(--pink); }
+  .cat-btns button span { display: block; font-size: 12px; font-weight: 500; color: var(--muted); margin-top: 4px; }
+  .svc-panel { margin-top: 10px; padding: 10px; border: 1px solid var(--border); border-radius: 14px; background: rgba(255,255,255,.02); }
+  .svc { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+  .svc button { text-align: left; border: 1px solid var(--border); background: var(--s2); border-radius: 12px; padding: 10px; }
+  .svc button b { display: block; font-size: 13px; }
+  .svc button span { color: var(--pink); font-size: 12px; font-weight: 700; }
+  .item-line { display: grid; grid-template-columns: 1fr 90px 110px 34px; gap: 8px; align-items: center; margin-top: 8px; }
+  .item-line .nm { font-size: 13px; font-weight: 600; }
+  .item-line input { padding: 9px; }
+  .x { border: 1px solid var(--border); background: var(--s2); border-radius: 10px; height: 38px; }
+  .sum { display: flex; justify-content: space-between; padding: 6px 0; }
+  .sum.big { font-size: 20px; font-weight: 900; border-top: 1px solid var(--border); margin-top: 6px; padding-top: 12px; }
+  .photo-pick { display: flex; align-items: center; gap: 12px; border: 1px dashed var(--border); border-radius: 12px; padding: 12px; }
+  .photo-pick img { width: 64px; height: 64px; object-fit: cover; border-radius: 10px; }
+  .suggest { background: var(--s2); border: 1px solid var(--border); border-radius: 12px; margin-top: 6px; overflow: hidden; }
+  .suggest button { display: block; width: 100%; text-align: left; border: 0; border-top: 1px solid var(--border); background: transparent; padding: 10px 12px; }
+  .suggest button:first-child { border-top: 0; }
+
+  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,.72); z-index: 50; display: flex; align-items: flex-end; justify-content: center; }
+  .modal { background: var(--s1); border: 1px solid var(--border); border-radius: 22px 22px 0 0; width: 100%; max-width: 620px;
+    max-height: 94vh; overflow-y: auto; padding: 20px 18px calc(20px + env(safe-area-inset-bottom)); }
+  @media (min-width: 720px) { .overlay { align-items: center; } .modal { border-radius: 22px; } }
+  .modal h3 { font-size: 20px; margin-bottom: 4px; }
+  .actions { display: flex; gap: 10px; margin-top: 18px; }
+  .actions .btn { flex: 1; }
+  .err { color: var(--bad); font-size: 14px; min-height: 18px; margin-top: 8px; }
+  .nota { background: #fff; color: #111; border-radius: 12px; padding: 16px; font-family: ui-monospace, Menlo, monospace; font-size: 13px; white-space: pre-wrap; line-height: 1.5; }
+  .pin-dots { display: flex; justify-content: center; gap: 14px; margin: 18px 0; }
+  .pin-dots i { width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--pink); }
+  .pin-dots i.f { background: var(--pink); }
+  .pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .pad button { padding: 16px 0; font-size: 22px; font-weight: 700; border-radius: 14px; border: 1px solid var(--border); background: var(--s2); }
+  .viewer { position: fixed; inset: 0; background: rgba(0,0,0,.92); z-index: 70; display: flex; align-items: center; justify-content: center; padding: 20px; }
+  .viewer img { max-width: 100%; max-height: 100%; border-radius: 10px; }
+
+  .banner { background: rgba(251,191,36,.12); border: 1px solid rgba(251,191,36,.4); color: var(--warn); padding: 12px 14px; border-radius: 14px; margin-bottom: 14px; font-size: 14px; }
+  .empty { text-align: center; padding: 36px 16px; color: var(--muted); }
+  .empty b { display: block; color: var(--text); font-size: 17px; margin-bottom: 6px; }
+  .toast { position: fixed; left: 50%; bottom: calc(90px + env(safe-area-inset-bottom)); transform: translateX(-50%); background: var(--s2);
+    border: 1px solid var(--pink); padding: 12px 18px; border-radius: 14px; z-index: 80; font-size: 14px; max-width: 90vw; }
+  .bars { display: flex; align-items: flex-end; gap: 6px; height: 120px; margin-top: 12px; }
+  .bars div { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; height: 100%; justify-content: flex-end; }
+  .bars i { display: block; width: 100%; max-width: 34px; background: var(--pink); border-radius: 6px 6px 2px 2px; min-height: 2px; }
+  .bars span { font-size: 10px; color: var(--muted); }
+  .login { max-width: 380px; margin: 8vh auto 0; }
+  .login .big-logo { text-align: center; color: var(--pink); font-weight: 900; letter-spacing: 6px; font-size: 40px; }
+  .login .big-logo small { display: block; font-size: 11px; letter-spacing: 4px; margin-top: 6px; }
+  .shift-btn { border: 1px solid var(--border); background: var(--s1); border-radius: 12px; padding: 8px 12px; font-size: 13px; font-weight: 600; text-align: left; line-height: 1.25; }
+  .shift-btn.on { border-color: var(--ok); }
+  .shift-btn.off { border-color: var(--warn); color: var(--warn); }
+  .board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; align-items: start; }
+  .col { background: rgba(255,255,255,.02); border: 1px solid var(--border); border-radius: 16px; padding: 10px; display: flex; flex-direction: column; gap: 10px; min-height: 120px; }
+  .col h4 { margin: 4px 4px 2px; font-size: 14px; display: flex; align-items: center; gap: 8px; }
+  .rack { display: inline-block; padding: 2px 8px; border-radius: 8px; background: var(--pink); color: #fff; font-size: 12px; font-weight: 800; }
+  .by { color: var(--muted); font-size: 11px; }
+  .risk { border-left: 4px solid var(--border); }
+  .risk.hi { border-left-color: var(--bad); }
+  .risk.md { border-left-color: var(--warn); }
+  .risk.ok { border-left-color: var(--ok); }
+  .lock { border: 1px dashed var(--border); background: transparent; border-radius: 10px; height: 38px; font-size: 13px; color: var(--muted); }
+  .inline-pin { grid-column: 1 / -1; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; background: var(--s2); border-radius: 12px; padding: 10px; }
+  .inline-pin input { flex: 1; min-width: 110px; }
+</style>
+</head>
+<body>
+<header>
+  <div class="bar">
+    <div class="logo">MAXX<small>LAUNDRY · LEGAH</small></div>
+    <span class="spacer"></span>
+    <button class="shift-btn" id="shiftBtn" type="button" style="display:none"></button>
+    <div style="text-align:right"><b id="clock" style="font-size:18px;font-variant-numeric:tabular-nums">--:--</b><div class="muted small" id="clockDate"></div></div>
+  </div>
+  <nav id="nav"></nav>
+</header>
+<main id="main"><div class="empty"><b>Memuat data…</b></div></main>
+<button class="fab" id="fab" type="button">+ Cucian Masuk</button>
+<div id="modalRoot"></div>
+
+<script>
+/* =====================================================================
+   MAXX LAUNDRY — pencatatan cucian & kas
+   Data (database artifact, tersinkron):
+     orders/{id}    : { no, customerId, name, phone, items:[{service,unit,qty,price}], total,
+                        notes, status: masuk|proses|siap|diambil, createdAt, dueAt,
+                        procAt, doneAt, pickedAt, payments:[{amount, method, at, proofId, proofUrl}] }
+     customers/{id} : { name, phone, notes, createdAt }
+     expenses/{id}  : { date, category, amount, method, note, proofId, proofUrl, createdAt }
+     settings/main  : { shopName, address, phone, pin, services:[{id,name,unit,price,hours}], expenseCats:[] }
+   ===================================================================== */
+
+const STATUS = {
+  masuk:   { label: 'Antri',      next: 'proses',  action: 'Mulai Cuci' },
+  proses:  { label: 'Dikerjakan', next: 'siap',    action: 'Selesai, Siap Ambil' },
+  siap:    { label: 'Siap Ambil', next: 'diambil', action: 'Diambil Pelanggan' },
+  diambil: { label: 'Diambil' },
+  batal:   { label: 'Dibatalkan' },
+};
+const METHODS = ['Tunai', 'QRIS', 'Transfer'];
+const DEFAULT_SETTINGS = {
+  shopName: 'MAXX LAUNDRY', address: 'Legah Group', phone: '', pin: '1234', paper: '58',
+  footer: 'Terima kasih. Simpan struk ini untuk pengambilan cucian.',
+  services: [
+    { id: 'r3', cat: 'kiloan', name: 'Reguler 3 Hari', unit: 'kg', price: 8000, hours: 72 },
+    { id: 'r2', cat: 'kiloan', name: '2 Hari', unit: 'kg', price: 10000, hours: 48 },
+    { id: 'k1', cat: 'kiloan', name: 'Kilat 1 Hari', unit: 'kg', price: 12000, hours: 24 },
+    { id: 'e6', cat: 'kiloan', name: 'Express 6 Jam', unit: 'kg', price: 20000, hours: 6 },
+    { id: 's-kemeja', cat: 'satuan', name: 'Kemeja / Kaos', unit: 'pcs', price: 10000, hours: 48 },
+    { id: 's-celana', cat: 'satuan', name: 'Celana Panjang', unit: 'pcs', price: 10000, hours: 48 },
+    { id: 's-jas', cat: 'satuan', name: 'Jas / Blazer', unit: 'pcs', price: 32000, hours: 72 },
+    { id: 's-gaun', cat: 'satuan', name: 'Gaun / Kebaya', unit: 'pcs', price: 32000, hours: 72 },
+    { id: 's-sprei', cat: 'satuan', name: 'Sprei Set', unit: 'set', price: 20000, hours: 48 },
+    { id: 's-selimut', cat: 'satuan', name: 'Selimut', unit: 'pcs', price: 25000, hours: 72 },
+    { id: 's-bc-kecil', cat: 'satuan', name: 'Bed Cover Kecil/Single', unit: 'pcs', price: 32000, hours: 72 },
+    { id: 's-bc-besar', cat: 'satuan', name: 'Bed Cover Besar/King', unit: 'pcs', price: 45000, hours: 72 },
+    { id: 's-gorden', cat: 'satuan', name: 'Gorden', unit: 'kg', price: 20000, hours: 72 },
+    { id: 's-boneka', cat: 'satuan', name: 'Boneka', unit: 'pcs', price: 25000, hours: 72 },
+    { id: 's-tas', cat: 'satuan', name: 'Tas', unit: 'pcs', price: 45000, hours: 72 },
+    { id: 's-sepatu', cat: 'satuan', name: 'Sepatu', unit: 'pasang', price: 45000, hours: 72 },
+    { id: 's-karpet', cat: 'satuan', name: 'Karpet (per meter persegi)', unit: 'meter', price: 20000, hours: 96 },
+  ],
+  cashiers: [{ id: 'k1794236008276', name: 'Lily', pin: '' }],
+  expenseCats: ['Deterjen & Pewangi', 'Plastik & Packing', 'Listrik', 'Air', 'Gas', 'Gaji', 'Perawatan Mesin', 'Lain-lain'],
+  requireScalePhoto: true,
+};
+const HARI = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+const HARI_P = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+const BLN = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+
+/* ---------------- Utilitas ---------------- */
+const $ = (s, r = document) => r.querySelector(s);
+const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+const pad2 = (n) => String(n).padStart(2, '0');
+const rp = (n) => { const v = Math.round(Number(n) || 0); return (v < 0 ? '−' : '') + 'Rp' + Math.abs(v).toLocaleString('id-ID'); };
+const num = (v) => { const x = parseFloat(String(v ?? '').replace(/\./g, '').replace(',', '.')); return isNaN(x) ? 0 : x; };
+const qtyNum = (v) => { const x = parseFloat(String(v ?? '').replace(',', '.')); return isNaN(x) ? 0 : x; };
+const fmtQty = (q) => String(Math.round(q * 100) / 100).replace('.', ',');
+const dkey = (d) => `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+const keyOf = (iso) => iso ? dkey(new Date(iso)) : '';
+const parseKey = (k) => { const [y, m, d] = k.split('-').map(Number); return new Date(y, m - 1, d); };
+const addDays = (k, n) => { const d = parseKey(k); d.setDate(d.getDate() + n); return dkey(d); };
+const todayKey = () => dkey(new Date());
+const hm = (iso) => { const d = new Date(iso); return `${pad2(d.getHours())}:${pad2(d.getMinutes())}`; };
+const tgl = (iso) => { const d = new Date(iso); return `${d.getDate()} ${BLN[d.getMonth()]} ${hm(iso)}`; };
+const tglHari = (iso) => { const d = new Date(iso); return `${HARI[d.getDay()]}, ${d.getDate()} ${BLN[d.getMonth()]} ${hm(iso)}`; };
+const keyLong = (k) => { const d = parseKey(k); return `${HARI_P[d.getDay()]}, ${d.getDate()} ${BLN[d.getMonth()]} ${d.getFullYear()}`; };
+const paidOf = (o) => (o.payments || []).reduce((s, p) => s + (Number(p.amount) || 0), 0);
+const dueOf = (o) => Math.max(0, (Number(o.total) || 0) - paidOf(o));
+const payState = (o) => { const p = paidOf(o); return p >= (o.total || 0) && o.total > 0 ? 'lunas' : p > 0 ? 'dp' : 'belum'; };
+const PAY_LABEL = { lunas: 'Lunas', dp: 'DP', belum: 'Belum bayar' };
+const itemsText = (o) => (o.items || []).map((i) => `${i.service} ${fmtQty(i.qty)} ${i.unit}`).join(', ');
+const waPhone = (p) => { let d = String(p || '').replace(/\D/g, ''); if (d.startsWith('0')) d = '62' + d.slice(1); else if (d.startsWith('8')) d = '62' + d; return d; };
+const BLANK = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
+const proofCache = {}; const proofLoading = {}; let proofRenderT;
+function imgSrc(id, url) {
+  if (url) return url; if (!id) return '';
+  if (proofCache[id]) return proofCache[id];
+  if (!proofLoading[id] && S.assets) {
+    proofLoading[id] = true;
+    S.assets.get(id).then((d) => { proofCache[id] = d || BLANK; clearTimeout(proofRenderT); proofRenderT = setTimeout(() => { render(); refreshOpenPhotos(); }, 80); }).catch(() => {});
+  }
+  return BLANK;
+}
+function refreshOpenPhotos() { document.querySelectorAll('#modalRoot [data-proof-id]').forEach((el) => { const v = proofCache[el.dataset.proofId]; if (v) el.dataset.photo = v; }); }
+
+/* ---------------- State ---------------- */
+const S = {
+  db: null, assets: null, canWrite: true, offline: false, loaded: false, auth: 'wait', email: '', role: '',
+  ordersActive: {}, ordersRecent: {}, ordersOld: {}, shifts: {}, shift: null, audit: {}, auditRange: '7d', customers: {}, expenses: {}, settings: { ...DEFAULT_SETTINGS },
+  tab: 'today', day: todayKey(), filter: 'aktif', q: '', kasRange: 'today', custQ: '',
+};
+const orders = () => ({ ...S.ordersOld, ...S.ordersRecent, ...S.ordersActive });
+const RECENT_DAYS = 75;
+const SHIFT_NAMES = ['Pagi', 'Siang', 'Malam'];
+const CATS = { kiloan: '⚖️ Kiloan', satuan: '👕 Satuan' };
+const svcCat = (v) => v.cat || (v.unit === 'kg' && !/^s-/.test(v.id || '') ? 'kiloan' : 'satuan');
+const byNow = () => (S.shift ? S.shift.cashier : (S.role === 'owner' ? 'Owner' : ''));
+const SETOR = 'Setoran ke Owner';
+const isVoid = (o) => o.status === 'batal';
+const isSetor = (e) => e.category === SETOR;
+const isOwner = () => S.role === 'owner';
+
+/* ---------------- Jejak audit (tidak bisa dihapus staff) ---------------- */
+const AUDIT_LABEL = {
+  pin_salah: 'PIN admin salah', pin_terkunci: 'PIN dikunci (terlalu banyak salah)', aksi_pin: 'Aksi memakai PIN admin',
+  ubah_harga: 'Harga diubah', batal_cucian: 'Cucian dibatalkan', ambil_tanpa_bayar: 'Diambil tanpa bayar', mundur_status: 'Status dimundurkan',
+  batal_pengeluaran: 'Pengeluaran dibatalkan', ubah_pengeluaran: 'Pengeluaran diubah', modal_beda: 'Modal awal beda dari shift sebelumnya',
+  mulai_shift: 'Mulai shift', tutup_shift: 'Tutup shift', verifikasi_bayar: 'Pembayaran dicocokkan', pengaturan: 'Pengaturan diubah', setoran: 'Setoran ke owner',
+};
+function audit(type, data = {}) {
+  if (!S.db) return;
+  try {
+    const ref = S.db.collection('audit').doc();
+    ref.set({ type, at: new Date().toISOString(), by: byNow(), email: S.email, role: S.role, shiftId: S.shift ? S.shift.id : '', ...data }).catch(() => {});
+  } catch (e) { /* abaikan */ }
+}
+
+/* ---------------- Tulis data (antre per dokumen) ---------------- */
+const queues = {};
+function queued(path, fn) { const p = (queues[path] || Promise.resolve()).catch(() => {}).then(fn); queues[path] = p; return p; }
+function setDoc(path, body) { return queued(path, () => S.db.doc(path).set(body)); }
+function delDoc(path) { return queued(path, () => S.db.doc(path).delete()); }
+function writeErr(e) {
+  console.error(e);
+  if (e && e.code === 'invalid_argument') { toast('Akun ini tidak punya izin menyimpan data. Hubungi owner.'); }
+  else if (e && e.code === 'quota_exceeded') toast('Penyimpanan penuh. Hubungi admin untuk arsip data lama.');
+  else toast('Gagal menyimpan. Cek internet lalu coba lagi.');
+}
+window.addEventListener('maxx-write-error', (ev) => writeErr(ev.detail));
+
+/* Kecilkan foto sebelum diunggah (hemat kuota, tidak tersimpan di galeri HP). */
+function compressImage(file, maxSide = 1280, quality = 0.72) {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file); const img = new Image();
+    img.onload = () => {
+      const scale = Math.min(1, maxSide / Math.max(img.width, img.height));
+      const c = document.createElement('canvas'); c.width = Math.round(img.width * scale); c.height = Math.round(img.height * scale);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(url);
+      c.toBlob((b) => b ? resolve(b) : reject(new Error('compress')), 'image/jpeg', quality);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('image')); };
+    img.src = url;
+  });
+}
+async function uploadProof(file) {
+  if (!file) return {};
+  if (!S.assets) throw { code: 'no_assets' };
+  const blob = await compressImage(file);
+  const r = await S.assets.upload(blob);
+  return { proofId: r.id, proofUrl: r.url };
+}
+
+/* ---------------- UI dasar ---------------- */
+let toastT;
+function toast(msg) { let t = $('.toast'); if (!t) { t = document.createElement('div'); t.className = 'toast'; document.body.appendChild(t); } t.textContent = msg; clearTimeout(toastT); toastT = setTimeout(() => t.remove(), 3200); }
+function openModal(html, mount) {
+  const root = $('#modalRoot');
+  root.innerHTML = `<div class="overlay"><div class="modal" role="dialog">${html}</div></div>`;
+  const ov = root.firstElementChild; ov.addEventListener('click', (e) => { if (e.target === ov) closeModal(); });
+  if (mount) mount(ov.firstElementChild);
+}
+function closeModal() { $('#modalRoot').innerHTML = ''; }
+function viewPhoto(src) {
+  if (!src || src === BLANK) { toast('Foto masih dimuat, coba lagi sebentar'); return; }
+  const v = document.createElement('div'); v.className = 'viewer'; v.innerHTML = `<img src="${esc(src)}" alt="Bukti">`;
+  v.addEventListener('click', () => v.remove()); document.body.appendChild(v);
+}
+const PIN_MAX_FAIL = 5, PIN_LOCK_MIN = 5;
+function pinLock() { try { return JSON.parse(localStorage.getItem('maxxPinLock') || '{}'); } catch (e) { return {}; } }
+function setPinLock(v) { try { localStorage.setItem('maxxPinLock', JSON.stringify(v)); } catch (e) {} }
+function askPin(title, ok) {
+  let pin = '';
+  const lk = pinLock();
+  if (lk.until && Date.now() < lk.until) { toast(`PIN dikunci. Coba lagi ${Math.ceil((lk.until - Date.now()) / 60000)} menit lagi.`); return; }
+  openModal(`<h3>${esc(title)}</h3><div class="muted">Masukkan PIN admin</div><div class="pin-dots">${'<i></i>'.repeat(4)}</div><div class="err" id="pe" style="text-align:center"></div>
+    <div class="pad">${[1,2,3,4,5,6,7,8,9].map((n) => `<button type="button" data-n="${n}">${n}</button>`).join('')}<button type="button" data-x="c" style="font-size:15px">Batal</button><button type="button" data-n="0">0</button><button type="button" data-x="b">⌫</button></div>`,
+  (m) => {
+    const paint = () => m.querySelectorAll('.pin-dots i').forEach((d, i) => d.classList.toggle('f', i < pin.length));
+    m.querySelector('.pad').addEventListener('click', (e) => {
+      const b = e.target.closest('button'); if (!b) return;
+      if (b.dataset.x === 'c') return closeModal();
+      if (b.dataset.x === 'b') { pin = pin.slice(0, -1); return paint(); }
+      if (pin.length < 4) { pin += b.dataset.n; paint(); }
+      if (pin.length === 4) setTimeout(() => {
+        if (pin === String(S.settings.pin || '1234')) { setPinLock({}); audit('aksi_pin', { aksi: title }); closeModal(); ok(); }
+        else {
+          const l = pinLock(); const fails = (l.fails || 0) + 1; audit('pin_salah', { aksi: title, ke: fails });
+          if (fails >= PIN_MAX_FAIL) { setPinLock({ until: Date.now() + PIN_LOCK_MIN * 60000 }); audit('pin_terkunci', { aksi: title }); closeModal(); toast(`Salah ${PIN_MAX_FAIL}x. PIN dikunci ${PIN_LOCK_MIN} menit dan dilaporkan ke owner.`); return; }
+          setPinLock({ fails }); m.querySelector('#pe').textContent = `PIN salah (${fails}/${PIN_MAX_FAIL})`; pin = ''; paint();
+        }
+      }, 120);
+    });
+  });
+}
+function photoPicker(id, label) {
+  return `<label class="photo-pick" for="${id}"><img id="${id}Prev" alt="" style="display:none"><span><b>📷 ${esc(label)}</b><br><span class="muted small">Ketuk untuk foto / pilih gambar</span></span></label>
+    <input type="file" id="${id}" accept="image/*" style="display:none">`;
+}
+function bindPhoto(m, id) {
+  const inp = m.querySelector('#' + id); const prev = m.querySelector('#' + id + 'Prev');
+  inp.addEventListener('change', () => { const f = inp.files[0]; if (!f) return; prev.src = URL.createObjectURL(f); prev.style.display = 'block'; });
+  return () => inp.files[0] || null;
+}
+
+/* ---------------- Navigasi ---------------- */
+function activeCounts() {
+  const c = { masuk: 0, proses: 0, siap: 0 };
+  Object.values(S.ordersActive).forEach((o) => { if (c[o.status] !== undefined) c[o.status]++; });
+  return c;
+}
+function renderNav() {
+  const c = activeCounts(); const aktif = c.masuk + c.proses + c.siap;
+  const tabs = [['today', 'Hari Ini'], ['orders', `Cucian${aktif ? `<span class="n">${aktif}</span>` : ''}`], ['kas', 'Kas'], ['customers', 'Pelanggan']];
+  if (isOwner()) { const r = riskCount(); tabs.push(['audit', `🛡️ Audit${r ? `<span class="n" style="background:var(--bad)">${r}</span>` : ''}`]); }
+  tabs.push(['settings', 'Pengaturan']);
+  $('#nav').innerHTML = tabs.map(([id, l]) => `<button type="button" data-tab="${id}" class="${S.tab === id ? 'active' : ''}">${l}</button>`).join('');
+  $('#fab').style.display = S.canWrite && S.db && ['today', 'orders', 'customers'].includes(S.tab) ? '' : 'none';
+}
+$('#nav').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-tab]'); if (!b) return;
+  S.tab = b.dataset.tab; render(); window.scrollTo(0, 0);
+});
+$('#fab').addEventListener('click', () => needShift(() => orderForm()));
+
+/* ---------------- Hitungan ---------------- */
+function paymentsIn(fromKey, toKey) {
+  const out = [];
+  Object.values(orders()).forEach((o) => !isVoid(o) && (o.payments || []).forEach((p, idx) => {
+    const k = keyOf(p.at); if (k >= fromKey && k <= toKey) out.push({ ...p, idx, order: o });
+  }));
+  return out.sort((a, b) => String(b.at).localeCompare(String(a.at)));
+}
+function expensesIn(fromKey, toKey) {
+  return Object.values(S.expenses).filter((e) => !e.voided && e.date >= fromKey && e.date <= toKey).sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt)));
+}
+const sumBy = (arr, f = (x) => x.amount) => arr.reduce((s, x) => s + (Number(f(x)) || 0), 0);
+const kgOf = (list) => list.reduce((s, o) => s + (o.items || []).filter((i) => i.unit === 'kg').reduce((a, i) => a + (Number(i.qty) || 0), 0), 0);
+
+/* ---------------- Kasir & shift ---------------- */
+function renderShiftBtn() {
+  const b = $('#shiftBtn'); if (!S.db || !S.loaded) { b.style.display = 'none'; return; }
+  b.style.display = '';
+  if (S.shift) { b.className = 'shift-btn on'; b.innerHTML = `👤 ${esc(S.shift.cashier)}<br><span class="muted small">Shift ${esc(S.shift.shift)} · Tutup shift</span>`; }
+  else if (isOwner()) { b.style.display = 'none'; }
+  else { b.className = 'shift-btn off'; b.innerHTML = '⚠️ Belum mulai shift<br><span class="small">Ketuk untuk mulai</span>'; }
+}
+$('#shiftBtn').addEventListener('click', () => { if (!S.canWrite) return; S.shift ? closeShiftForm() : startShiftForm(); });
+function needShift(fn) { if (!S.canWrite) return toast('Perangkat ini hanya bisa melihat'); if (S.shift || isOwner()) return fn(); startShiftForm(fn); }
+function startShiftForm(then) {
+  const cashiers = S.settings.cashiers || []; const h = new Date().getHours();
+  let shiftName = h < 11 ? 'Pagi' : h < 17 ? 'Siang' : 'Malam'; let pick = cashiers.length === 1 ? cashiers[0].id : '';
+  openModal(`<h3>Mulai Shift</h3><div class="muted small">Semua transaksi selama shift akan tercatat atas nama kasir ini.</div>
+    <label class="f">Kasir</label>
+    ${cashiers.length ? `<div class="seg" id="kList">${cashiers.map((c) => `<button type="button" data-k="${esc(c.id)}" class="${pick === c.id ? 'on' : ''}">${esc(c.name)}</button>`).join('')}</div>`
+      : `<input class="in" id="kNew" placeholder="Nama kasir"><div class="muted small" style="margin-top:6px">Daftar kasir bisa diatur di Pengaturan.</div>`}
+    <div id="kPinBox"></div>
+    <label class="f">Shift</label><div class="seg">${SHIFT_NAMES.map((x) => `<button type="button" data-sh="${x}" class="${x === shiftName ? 'on' : ''}">${x}</button>`).join('')}</div>
+    <label class="f">Uang tunai di laci saat mulai (modal awal)</label><input class="in" id="kCash" inputmode="numeric" placeholder="mis. 200000" value="${esc(lastCashEnd())}">
+    <div id="kNoteBox"></div>
+    <div class="err" id="kErr"></div>
+    <div class="actions"><button class="btn ghost" data-a="cancel">Batal</button><button class="btn" data-a="go">Mulai Shift</button></div>`,
+  (m) => {
+    const paintPin = () => { const c = cashiers.find((x) => x.id === pick);
+      m.querySelector('#kPinBox').innerHTML = !c ? '' : c.pin ? '<label class="f">PIN kasir</label><input class="in" id="kPin" inputmode="numeric" maxlength="4" type="password">'
+        : '<div class="banner" style="margin-top:10px">Kasir ini belum punya PIN. Owner harus mengisi PIN kasir di Pengaturan dulu.</div>'; };
+    const prevEnd = lastCashEnd();
+    m.querySelector('#kCash').addEventListener('input', () => {
+      const v = m.querySelector('#kCash').value.trim(); const box = m.querySelector('#kNoteBox');
+      box.innerHTML = prevEnd !== '' && v !== '' && Math.round(num(v)) !== Number(prevEnd) ? `<div class="banner" style="margin:10px 0 0">Shift sebelumnya ditutup dengan uang laci ${rp(prevEnd)}. Kalau jumlahnya beda, tulis alasannya.</div><label class="f">Alasan beda</label><input class="in" id="kNote" placeholder="mis. owner ambil Rp100.000 tadi malam">` : '';
+    });
+    paintPin();
+    m.addEventListener('click', async (e) => {
+      const t = e.target.closest('button'); if (!t) return;
+      if (t.dataset.k) { pick = t.dataset.k; m.querySelectorAll('[data-k]').forEach((b) => b.classList.toggle('on', b.dataset.k === pick)); paintPin(); return; }
+      if (t.dataset.sh) { shiftName = t.dataset.sh; m.querySelectorAll('[data-sh]').forEach((b) => b.classList.toggle('on', b.dataset.sh === shiftName)); return; }
+      if (t.dataset.a === 'cancel') return closeModal();
+      if (t.dataset.a !== 'go') return;
+      const err = (x) => { m.querySelector('#kErr').textContent = x; };
+      let cashier, cashierId;
+      if (cashiers.length) {
+        const c = cashiers.find((x) => x.id === pick); if (!c) return err('Pilih nama kasir');
+        if (!c.pin) return err('Kasir ini belum punya PIN. Minta owner mengisinya di Pengaturan.');
+        if (m.querySelector('#kPin').value !== String(c.pin)) { audit('pin_salah', { aksi: 'Mulai shift ' + c.name }); return err('PIN kasir salah'); }
+        cashier = c.name; cashierId = c.id;
+      } else {
+        return err('Belum ada kasir. Owner harus menambahkan kasir (nama + PIN) di Pengaturan.');
+      }
+      if (S.shift) return err('Masih ada shift yang belum ditutup');
+      const cashTxt = m.querySelector('#kCash').value.trim(); if (cashTxt === '') return err('Hitung dan isi uang di laci (boleh 0)');
+      const cashStart = Math.round(num(cashTxt)); const noteEl = m.querySelector('#kNote'); const startNote = noteEl ? noteEl.value.trim() : '';
+      if (noteEl && !startNote) return err('Tulis alasan kenapa modal awal beda');
+      t.disabled = true;
+      try {
+        const body = { cashierId, cashier, shift: shiftName, startAt: new Date().toISOString(), cashStart, startNote, prevCashEnd: prevEnd === '' ? null : Number(prevEnd), endAt: '' };
+        const ref = S.db.collection('shifts').doc(); await setDoc(ref.path, body);
+        S.shift = { id: ref.id, ...body }; S.shifts[ref.id] = S.shift; closeModal(); render(); toast(`Shift ${shiftName} dimulai · ${cashier}`);
+        audit('mulai_shift', { kasir: cashier, modal: cashStart });
+        if (startNote) audit('modal_beda', { kasir: cashier, modal: cashStart, seharusnya: Number(prevEnd), selisih: cashStart - Number(prevEnd), alasan: startNote });
+        if (then) then();
+      } catch (er) { closeModal(); writeErr(er); }
+    });
+  });
+}
+function lastCashEnd() {
+  const closed = Object.values(S.shifts).filter((x) => x.endAt).sort((a, b) => String(b.endAt).localeCompare(String(a.endAt)));
+  return closed.length && closed[0].cashEnd != null ? String(closed[0].cashEnd) : '';
+}
+function shiftSummary(sh, endIso) {
+  const from = sh.startAt, to = endIso || new Date().toISOString();
+  const inWin = (t) => t && t >= from && t <= to;
+  const pays = []; Object.values(orders()).forEach((o) => !isVoid(o) && (o.payments || []).forEach((p) => { if (inWin(p.at)) pays.push(p); }));
+  const exps = Object.values(S.expenses).filter((e) => !e.voided && inWin(e.createdAt));
+  const all = Object.values(orders()).filter((o) => !isVoid(o));
+  const by = (m) => sumBy(pays.filter((p) => p.method === m));
+  const cashOut = sumBy(exps.filter((e) => e.method === 'Tunai'));
+  return {
+    masuk: all.filter((o) => inWin(o.createdAt)).length, selesai: all.filter((o) => inWin(o.doneAt)).length, diambil: all.filter((o) => inWin(o.pickedAt)).length,
+    tunai: by('Tunai'), qris: by('QRIS'), transfer: by('Transfer'), pengeluaran: sumBy(exps.filter((e) => !isSetor(e))), pengeluaranTunai: cashOut,
+    setor: sumBy(exps.filter((e) => isSetor(e) && e.method === 'Tunai')),
+    expected: (Number(sh.cashStart) || 0) + by('Tunai') - cashOut,
+  };
+}
+function closeShiftForm() {
+  const sh = S.shift; if (!sh) return;
+  // Hitung buta: kasir mengisi uang fisik DULU tanpa melihat angka "seharusnya",
+  // supaya kekurangan tidak bisa ditutupi dengan mengetik angka yang sama.
+  openModal(`<h3>Tutup Shift ${esc(sh.shift)}</h3><div class="muted small">${esc(sh.cashier)} · mulai ${tgl(sh.startAt)}</div>
+    <div class="banner" style="margin-top:12px">Hitung semua uang tunai di laci, lalu isi jumlahnya. Hasil pencocokan muncul setelah disimpan.</div>
+    <label class="f">Uang tunai di laci sekarang</label><input class="in" id="cEnd" inputmode="numeric" placeholder="Hitung uang fisik lalu isi di sini">
+    <label class="f">Catatan (opsional)</label><input class="in" id="cNote" placeholder="mis. uang kembalian kurang receh">
+    <div class="err" id="cErr"></div>
+    <div class="actions"><button class="btn ghost" data-a="cancel">Batal</button><button class="btn" data-a="close">Tutup Shift</button></div>`,
+  (m) => {
+    const inp = m.querySelector('#cEnd');
+    m.addEventListener('click', async (e) => {
+      const a = e.target.dataset.a; if (!a) return; if (a === 'cancel') return closeModal();
+      if (!inp.value.trim()) { m.querySelector('#cErr').textContent = 'Hitung dan isi uang di laci dulu'; return; }
+      const endAt = new Date().toISOString(); const fin = shiftSummary(sh, endAt); const cashEnd = Math.round(num(inp.value));
+      const body = { ...stripId(sh), endAt, cashEnd, expected: fin.expected, diff: cashEnd - fin.expected, note: m.querySelector('#cNote').value.trim(), summary: fin };
+      try {
+        await setDoc('shifts/' + sh.id, body); S.shifts[sh.id] = { id: sh.id, ...body }; S.shift = null; render();
+        audit('tutup_shift', { kasir: sh.cashier, laci: cashEnd, seharusnya: fin.expected, selisih: body.diff });
+        const d = body.diff;
+        openModal(`<h3>Shift ditutup</h3>
+          <div class="card" style="margin-top:12px;padding:12px">
+            <div class="sum"><span class="muted">Cucian masuk / selesai / diambil</span><span>${fin.masuk} / ${fin.selesai} / ${fin.diambil}</span></div>
+            <div class="sum"><span class="muted">QRIS · Transfer masuk</span><span>${rp(fin.qris)} · ${rp(fin.transfer)}</span></div>
+            <div class="sum"><span class="muted">Modal awal</span><span>${rp(sh.cashStart)}</span></div>
+            <div class="sum"><span class="muted">+ Tunai masuk</span><span class="amt-in">${rp(fin.tunai)}</span></div>
+            <div class="sum"><span class="muted">− Pengeluaran & setoran tunai</span><span class="amt-out">${rp(fin.pengeluaranTunai)}</span></div>
+            <div class="sum big"><span>Seharusnya di laci</span><span>${rp(fin.expected)}</span></div>
+            <div class="sum"><span class="muted">Dihitung kasir</span><span>${rp(cashEnd)}</span></div>
+            <div class="sum big"><span>Selisih</span><span style="color:${d === 0 ? 'var(--ok)' : d > 0 ? 'var(--info)' : 'var(--bad)'}">${d === 0 ? '✓ Pas' : (d > 0 ? 'Lebih ' : 'Kurang ') + rp(Math.abs(d))}</span></div>
+          </div>${d ? '<p class="muted small">Selisih ini tercatat dan terlihat oleh owner.</p>' : ''}
+          <button class="btn lg" style="margin-top:12px" data-a="ok">Selesai</button>`, (m2) => m2.addEventListener('click', (ev) => { if (ev.target.dataset.a) closeModal(); }));
+      } catch (er) { closeModal(); writeErr(er); }
+    });
+  });
+}
+function shiftHistory() {
+  const list = Object.values(S.shifts).filter((x) => x.endAt).sort((a, b) => String(b.startAt).localeCompare(String(a.startAt))).slice(0, 30);
+  if (!list.length) return '<div class="muted small" style="padding:10px 0">Belum ada shift yang ditutup.</div>';
+  return list.map((x) => `<div class="list-row"><div class="info"><b>${esc(x.cashier)} · Shift ${esc(x.shift)}</b>
+    <span>${tgl(x.startAt)} – ${hm(x.endAt)} · laci ${rp(x.cashEnd)} (seharusnya ${rp(x.expected)})${x.note ? ' · ' + esc(x.note) : ''}</span></div>
+    <span class="pill ${x.diff === 0 ? 'pay-lunas' : x.diff > 0 ? 'st-proses' : 'pay-belum'}">${x.diff === 0 ? 'Pas' : (x.diff > 0 ? '+' : '−') + rp(Math.abs(x.diff))}</span></div>`).join('');
+}
+
+/* ---------------- Halaman: Hari Ini ---------------- */
+function viewToday() {
+  const k = S.day; const all = Object.values(orders()).filter((o) => !isVoid(o));
+  const masuk = all.filter((o) => keyOf(o.createdAt) === k);
+  const selesai = all.filter((o) => keyOf(o.doneAt) === k);
+  const diambil = all.filter((o) => keyOf(o.pickedAt) === k);
+  const c = activeCounts();
+  const pays = paymentsIn(k, k); const exps = expensesIn(k, k);
+  const inc = sumBy(pays); const out = sumBy(exps.filter((e) => !isSetor(e)));
+  const byM = METHODS.map((m) => [m, sumBy(pays.filter((p) => p.method === m))]);
+  const piutang = sumBy(all.filter((o) => o.status !== 'diambil' || o.unpaidPickup), dueOf);
+  const overdue = Object.values(S.ordersActive).filter((o) => o.status !== 'siap' && o.dueAt && new Date(o.dueAt) < new Date());
+  const isToday = k === todayKey();
+
+  // grafik pemasukan 7 hari
+  const days7 = [...Array(7)].map((_, i) => addDays(k, i - 6));
+  const vals = days7.map((d) => sumBy(paymentsIn(d, d)));
+  const max = Math.max(1, ...vals);
+
+  return `<div class="row wrap" style="margin-bottom:12px">
+      <div><h2>${isToday ? 'Hari Ini' : 'Ringkasan'}</h2><div class="muted">${esc(keyLong(k))}</div></div><span class="spacer"></span>
+      <button class="btn sm ghost" data-day="-1">‹</button><input type="date" class="in" id="dayPick" value="${k}" style="width:auto;padding:8px">
+      <button class="btn sm ghost" data-day="1" ${isToday ? 'disabled' : ''}>›</button></div>
+    ${overdue.length ? `<div class="banner">⏰ ${overdue.length} cucian melewati estimasi selesai. <a href="#" data-goto="overdue" style="color:inherit;font-weight:700">Lihat</a></div>` : ''}
+    <div class="grid g-stats">
+      <div class="card stat"><span>Cucian masuk</span><b>${masuk.length}</b><em>${fmtQty(kgOf(masuk))} kg</em></div>
+      <div class="card stat"><span>Selesai dikerjakan</span><b style="color:var(--info)">${selesai.length}</b><em>${fmtQty(kgOf(selesai))} kg</em></div>
+      <div class="card stat"><span>Diambil pelanggan</span><b style="color:var(--ok)">${diambil.length}</b><em>${fmtQty(kgOf(diambil))} kg</em></div>
+      <div class="card stat"><span>Masih di outlet</span><b style="color:var(--pink)">${c.masuk + c.proses + c.siap}</b><em>${c.masuk} antri · ${c.proses} dicuci · ${c.siap} siap</em></div>
+    </div>
+    <h3 style="margin:22px 0 10px">Kas ${isToday ? 'hari ini' : 'tanggal ini'}</h3>
+    <div class="grid g-stats">
+      <div class="card stat money"><span>Pemasukan</span><b style="color:var(--ok)">${rp(inc)}</b><em>${byM.map(([m, v]) => `${m} ${rp(v)}`).join(' · ')}</em></div>
+      <div class="card stat money"><span>Pengeluaran</span><b style="color:var(--bad)">${rp(out)}</b><em>${exps.filter((e) => !isSetor(e)).length} catatan</em></div>
+      <div class="card stat money"><span>Bersih</span><b>${rp(inc - out)}</b><em>${sumBy(exps.filter(isSetor)) ? 'Disetor ke owner ' + rp(sumBy(exps.filter(isSetor))) : 'Pemasukan − pengeluaran'}</em></div>
+      <div class="card stat money"><span>Belum dibayar pelanggan</span><b style="color:var(--warn)">${rp(piutang)}</b><em>Termasuk yang diambil belum lunas</em></div>
+    </div>
+    <div class="grid g-2" style="margin-top:12px">
+      <div class="card"><h3>Pemasukan 7 hari</h3><div class="bars">${days7.map((d, i) => `<div title="${rp(vals[i])}"><i style="height:${Math.round(vals[i] / max * 100)}%"></i><span>${HARI[parseKey(d).getDay()]}</span></div>`).join('')}</div>
+        <div class="muted small" style="margin-top:8px">Total 7 hari: <b style="color:var(--text)">${rp(vals.reduce((a, b) => a + b, 0))}</b></div></div>
+      <div class="card"><div class="row"><h3>Transaksi ${isToday ? 'hari ini' : ''}</h3><span class="spacer"></span>${S.canWrite ? '<button class="btn sm outline" data-act="expense">+ Pengeluaran</button>' : ''}</div>
+        ${txList(pays, exps, 6)}</div>
+    </div>`;
+}
+function txList(pays, exps, limit) {
+  const rows = [...pays.map((p) => ({ t: p.at, html: `<div class="list-row" data-order="${esc(p.order.id)}" role="button" style="cursor:pointer">
+      ${p.proofId || p.proofUrl ? `<img class="thumb" src="${esc(imgSrc(p.proofId, p.proofUrl))}" alt="" data-photo="${esc(imgSrc(p.proofId, p.proofUrl))}">` : ''}
+      <div class="info"><b>${esc(p.order.name)}</b><span>${esc(p.order.no)} · ${esc(p.method)} · ${hm(p.at)}${p.by ? ' · ' + esc(p.by) : ''}</span></div><span class="amt-in">+${rp(p.amount)}</span></div>` })),
+    ...exps.map((e) => ({ t: e.createdAt, html: `<div class="list-row" data-expense="${esc(e.id)}" role="button" style="cursor:pointer">
+      ${e.proofId || e.proofUrl ? `<img class="thumb" src="${esc(imgSrc(e.proofId, e.proofUrl))}" alt="" data-photo="${esc(imgSrc(e.proofId, e.proofUrl))}">` : ''}
+      <div class="info"><b>${esc(e.category)}</b><span>${esc(e.note || '')}${e.note ? ' · ' : ''}${esc(e.method)}${e.createdAt ? ' · ' + hm(e.createdAt) : ''}${e.by ? ' · ' + esc(e.by) : ''}</span></div><span class="amt-out">−${rp(e.amount)}</span></div>` }))]
+    .sort((a, b) => String(b.t).localeCompare(String(a.t)));
+  if (!rows.length) return '<div class="muted small" style="padding:14px 0">Belum ada transaksi.</div>';
+  const shown = limit ? rows.slice(0, limit) : rows;
+  return shown.map((r) => r.html).join('') + (limit && rows.length > limit ? `<button class="btn sm ghost" style="margin-top:8px;width:100%" data-tab-go="kas">Lihat semua (${rows.length})</button>` : '');
+}
+
+/* ---------------- Halaman: Cucian ---------------- */
+function viewOrders() {
+  const c = activeCounts(); const all = Object.values(orders());
+  const now = new Date();
+  const filters = [['aktif', `Semua aktif (${c.masuk + c.proses + c.siap})`], ['masuk', `Antri (${c.masuk})`], ['proses', `Dikerjakan (${c.proses})`],
+    ['siap', `Siap ambil (${c.siap})`], ['overdue', 'Lewat estimasi'], ['belumbayar', 'Belum lunas'], ['diambil', 'Sudah diambil'], ['batal', 'Dibatalkan'], ['semua', 'Semua']];
+  let list = all.filter((o) => {
+    if (S.filter === 'batal') return isVoid(o);
+    if (isVoid(o) && S.filter !== 'semua') return false;
+    if (S.filter === 'aktif') return o.status !== 'diambil';
+    if (S.filter === 'overdue') return o.status !== 'diambil' && o.status !== 'siap' && o.dueAt && new Date(o.dueAt) < now;
+    if (S.filter === 'belumbayar') return payState(o) !== 'lunas';
+    if (S.filter === 'semua') return true;
+    return o.status === S.filter;
+  });
+  if (S.q) { const q = S.q.toLowerCase(); list = list.filter((o) => [o.name, o.no, o.phone].some((v) => String(v || '').toLowerCase().includes(q))); }
+  list.sort((a, b) => S.filter === 'semua' ? String(b.createdAt).localeCompare(String(a.createdAt)) : S.filter === 'diambil' ? String(b.pickedAt).localeCompare(String(a.pickedAt)) : String(a.createdAt).localeCompare(String(b.createdAt)));
+  return `<h2>Cucian</h2><p class="sub">Ketuk kartu untuk detail, bayar, atau kirim nota.</p>
+    <input class="search" id="q" placeholder="Cari nama, no. nota, atau no. HP…" value="${esc(S.q)}" autocomplete="off">
+    <div class="chips">${filters.map(([id, l]) => `<button class="chip ${S.filter === id ? 'on' : ''}" data-filter="${id}">${l}</button>`).join('')}</div>
+    ${list.length && S.filter === 'aktif' && window.innerWidth >= 900 ? `<div class="board">${['masuk', 'proses', 'siap'].map((stt) => { const col = list.filter((o) => o.status === stt);
+        return `<div class="col"><h4><span class="pill st-${stt}">${STATUS[stt].label}</span><span class="muted">${col.length}</span></h4>${col.map(orderCard).join('') || '<div class="muted small" style="padding:8px">Kosong</div>'}</div>`; }).join('')}</div>`
+      : list.length ? `<div class="grid g-2">${list.map(orderCard).join('')}</div>` : `<div class="card empty"><b>Tidak ada cucian</b>${S.filter === 'aktif' ? 'Ketuk + Cucian Masuk untuk mencatat.' : ''}</div>`}
+    ${S.q.trim().length >= 4 ? `<div style="margin-top:14px"><button class="btn sm ghost" data-act="searchOld">🔎 Cari "${esc(S.q.trim())}" di nota lama (lebih dari ${RECENT_DAYS} hari)</button></div>` : ''}
+    ${S.filter === 'diambil' ? `<p class="muted small" style="margin-top:12px">Menampilkan ${RECENT_DAYS} hari terakhir.</p>` : ''}`;
+}
+function orderCard(o) {
+  const st = STATUS[o.status] || STATUS.masuk; const ps = payState(o);
+  const late = !isVoid(o) && o.status !== 'diambil' && o.status !== 'siap' && o.dueAt && new Date(o.dueAt) < new Date();
+  return `<div class="order" role="button" data-order="${esc(o.id)}" style="cursor:pointer">
+    <div class="top"><span class="no">${esc(o.no)}</span>${o.status === 'siap' && o.rack && o.rack !== '-' ? `<span class="rack">📍 ${esc(o.rack)}</span>` : ''}<span class="spacer"></span><span class="pill st-${o.status}">${st.label}</span></div>
+    <div class="name">${esc(o.name)}</div><div class="items">${esc(itemsText(o))}</div>
+    <div class="items ${late ? 'late' : ''}">${isVoid(o) ? `Dibatalkan ${tgl(o.voidAt)} · ${esc(o.voidReason || '')}` : o.status === 'diambil' ? `Diambil ${tgl(o.pickedAt)}` : `Masuk ${tgl(o.createdAt)} · Selesai ${o.dueAt ? tglHari(o.dueAt) : '-'}${late ? ' (terlambat)' : ''}`}</div>
+    <div class="bottom"><span class="total">${rp(o.total)}</span><span class="pill pay-${ps}">${PAY_LABEL[ps]}${ps === 'dp' ? ' · sisa ' + rp(dueOf(o)) : ''}</span><span class="spacer"></span>
+      ${st.next && S.canWrite ? `<button class="btn sm ${o.status === 'siap' ? 'ok' : ''}" data-advance="${esc(o.id)}">${st.action}</button>` : ''}</div>
+  </div>`;
+}
+
+/* ---------------- Form cucian masuk ---------------- */
+function orderForm(prefill = {}) {
+  const svcs = S.settings.services || [];
+  const st = { cat: '', custId: prefill.custId || '', name: prefill.name || '', phone: prefill.phone || '', items: [], payMode: 'nanti', method: 'Tunai', dp: '' };
+  const html = `<h3>Cucian Masuk</h3><div class="muted small">Catat cucian pelanggan yang baru datang.</div>
+    <label class="f">Nama pelanggan</label><input class="in" id="oName" autocomplete="off" placeholder="Ketik nama atau no. HP pelanggan" value="${esc(st.name)}">
+    <div id="oSug"></div>
+    <label class="f">No. HP / WA (opsional)</label><input class="in" id="oPhone" inputmode="tel" placeholder="08xx" value="${esc(st.phone)}">
+    <label class="f">Pilih layanan</label>
+    <div class="cat-btns">${Object.entries(CATS).map(([k, l]) => { const list = svcs.filter((x) => svcCat(x) === k);
+      const lo = list.length ? Math.min(...list.map((x) => x.price)) : 0;
+      return `<button type="button" data-cat="${k}">${l}<span>${list.length ? `${list.length} pilihan · mulai ${rp(lo)}` : 'Belum ada'}</span></button>`; }).join('')}</div>
+    <div id="oSvcPanel"></div>
+    <div id="oItems"></div>
+    <div id="oScaleBox" style="margin-top:12px;display:none">${photoPicker('oScale', 'Foto timbangan (angka berat harus terlihat)')}</div>
+    <label class="f">Estimasi selesai</label><input class="in" id="oDue" type="datetime-local">
+    <label class="f">Catatan (opsional)</label><textarea class="in" id="oNotes" placeholder="mis. jangan pakai pewangi, ada noda di kemeja putih"></textarea>
+    <label class="f">Pembayaran</label><div class="seg" id="oPay"><button type="button" data-pay="nanti" class="on">Bayar saat ambil</button><button type="button" data-pay="lunas">Lunas sekarang</button><button type="button" data-pay="dp">DP</button></div>
+    <div id="oPayBox"></div>
+    <div id="oSum" style="margin-top:14px"></div>
+    <div class="err" id="oErr"></div>
+    <div class="actions"><button class="btn ghost" data-a="cancel">Batal</button><button class="btn" data-a="save">Simpan</button></div>`;
+  openModal(html, (m) => {
+    let getPhoto = () => null;
+    const getScale = bindPhoto(m, 'oScale');
+    const needScale = () => S.settings.requireScalePhoto !== false && st.items.some((i) => i.unit === 'kg' && i.cat === 'kiloan');
+    const paintScale = () => { m.querySelector('#oScaleBox').style.display = needScale() ? '' : 'none'; };
+    const due = () => {
+      const hrs = Math.max(0, ...st.items.map((i) => i.hours || 0)) || 48;
+      const d = new Date(Date.now() + hrs * 3600000); d.setSeconds(0, 0);
+      return `${dkey(d)}T${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+    };
+    let dueTouched = false;
+    m.querySelector('#oDue').value = due();
+    m.querySelector('#oDue').addEventListener('input', () => { dueTouched = true; });
+    const total = () => Math.round(st.items.reduce((s, i) => s + qtyNum(i.qty) * num(i.price), 0));
+    const paintItems = () => {
+      m.querySelector('#oItems').innerHTML = st.items.length ? `<div class="muted small" style="margin-top:12px;display:grid;grid-template-columns:1fr 90px 110px 34px;gap:8px"><span>Layanan</span><span>Jumlah</span><span>Harga/satuan</span><span></span></div>` +
+        st.items.map((it, i) => `<div class="item-line"><span class="nm">${esc(it.service)}<br><span class="muted small">${rp(qtyNum(it.qty) * num(it.price))}</span></span>
+          <input class="in" data-qty="${i}" inputmode="decimal" value="${esc(it.qty)}" placeholder="${esc(it.unit)}">
+          ${it.unlocked ? `<input class="in" data-price="${i}" inputmode="numeric" value="${esc(it.price)}">` : `<button type="button" class="lock" data-unlock="${i}" title="Ubah harga butuh PIN admin">${rp(num(it.price))} 🔒</button>`}
+          <button type="button" class="x" data-rm="${i}">✕</button>
+          ${st.pinFor === i ? `<div class="inline-pin"><input class="in" id="uPin" type="password" inputmode="numeric" maxlength="4" placeholder="PIN admin"><input class="in" id="uWhy" placeholder="Alasan ubah harga (wajib)"><button type="button" class="btn sm" data-unlock-ok="${i}">Buka</button><button type="button" class="btn sm ghost" data-unlock-cancel="1">Batal</button><div class="err" id="uErr" style="width:100%;margin:0"></div></div>` : ''}</div>`).join('') : '';
+      paintScale();
+      if (!dueTouched) m.querySelector('#oDue').value = due();
+      paintSum();
+    };
+    const paintSum = () => {
+      const t = total(); const paid = st.payMode === 'lunas' ? t : st.payMode === 'dp' ? Math.min(t, num(st.dp)) : 0;
+      m.querySelector('#oSum').innerHTML = `<div class="sum big"><span>Total</span><span>${rp(t)}</span></div>
+        ${paid ? `<div class="sum"><span class="muted">Dibayar sekarang</span><span>${rp(paid)}</span></div><div class="sum"><span class="muted">Sisa saat ambil</span><span>${rp(t - paid)}</span></div>` : ''}`;
+    };
+    const paintPay = () => {
+      m.querySelectorAll('[data-pay]').forEach((b) => b.classList.toggle('on', b.dataset.pay === st.payMode));
+      const box = m.querySelector('#oPayBox');
+      if (st.payMode === 'nanti') { box.innerHTML = ''; getPhoto = () => null; paintSum(); return; }
+      box.innerHTML = `${st.payMode === 'dp' ? `<label class="f">Jumlah DP</label><input class="in" id="oDp" inputmode="numeric" placeholder="mis. 20000" value="${esc(st.dp)}">` : ''}
+        <label class="f">Metode</label><div class="seg" id="oMethod">${METHODS.map((x) => `<button type="button" data-m="${x}" class="${st.method === x ? 'on' : ''}">${x}</button>`).join('')}</div>
+        <div id="oProofBox" style="margin-top:10px;${st.method === 'Tunai' ? 'display:none' : ''}">${photoPicker('oProof', 'Foto bukti ' + st.method)}</div>`;
+      getPhoto = bindPhoto(m, 'oProof');
+      const dp = m.querySelector('#oDp'); if (dp) dp.addEventListener('input', () => { st.dp = dp.value; paintSum(); });
+      paintSum();
+    };
+    // Saran pelanggan
+    const nameIn = m.querySelector('#oName');
+    nameIn.addEventListener('input', () => {
+      st.custId = ''; const q = nameIn.value.trim().toLowerCase(); const box = m.querySelector('#oSug');
+      if (q.length < 2) { box.innerHTML = ''; return; }
+      const hits = Object.values(S.customers).filter((c) => String(c.name).toLowerCase().includes(q) || String(c.phone || '').includes(q)).slice(0, 5);
+      box.innerHTML = hits.length ? `<div class="suggest">${hits.map((c) => `<button type="button" data-cust="${esc(c.id)}"><b>${esc(c.name)}</b> <span class="muted small">${esc(c.phone || '')}</span></button>`).join('')}</div>` : '';
+    });
+    m.addEventListener('input', (e) => {
+      const q = e.target.dataset.qty, p = e.target.dataset.price;
+      if (q !== undefined) { st.items[q].qty = e.target.value; e.target.parentElement.querySelector('.muted').textContent = rp(qtyNum(st.items[q].qty) * num(st.items[q].price)); paintSum(); }
+      if (p !== undefined) { st.items[p].price = e.target.value; e.target.parentElement.querySelector('.muted').textContent = rp(qtyNum(st.items[p].qty) * num(st.items[p].price)); paintSum(); }
+    });
+    m.addEventListener('click', async (e) => {
+      const t = e.target.closest('button'); if (!t) return;
+      if (t.dataset.cust) { const c = S.customers[t.dataset.cust]; st.custId = c.id; nameIn.value = c.name; m.querySelector('#oPhone').value = c.phone || ''; m.querySelector('#oSug').innerHTML = ''; return; }
+      if (t.dataset.cat) {
+        st.cat = st.cat === t.dataset.cat ? '' : t.dataset.cat;
+        m.querySelectorAll('[data-cat]').forEach((b) => b.classList.toggle('on', b.dataset.cat === st.cat));
+        const list = svcs.map((x, i) => [x, i]).filter(([x]) => svcCat(x) === st.cat);
+        m.querySelector('#oSvcPanel').innerHTML = st.cat ? `<div class="svc-panel"><div class="svc">${list.map(([x, i]) => `<button type="button" data-svc="${i}"><b>${esc(x.name)}</b><span>${rp(x.price)}/${esc(x.unit)}</span></button>`).join('')}</div></div>` : '';
+        return;
+      }
+      if (t.dataset.svc !== undefined) {
+        st.cat = ''; m.querySelector('#oSvcPanel').innerHTML = ''; m.querySelectorAll('[data-cat]').forEach((b) => b.classList.remove('on'));
+        const s = svcs[t.dataset.svc]; st.items.push({ service: s.name, unit: s.unit, cat: svcCat(s), qty: s.unit === 'kg' ? '' : '1', price: String(s.price), basePrice: s.price, hours: s.hours }); paintItems(); const qi = m.querySelector(`[data-qty="${st.items.length - 1}"]`); if (qi) qi.focus(); return; }
+      if (t.dataset.rm !== undefined) { st.items.splice(Number(t.dataset.rm), 1); st.pinFor = null; paintItems(); return; }
+      if (t.dataset.unlock !== undefined) {
+        const lk = pinLock(); if (lk.until && Date.now() < lk.until) { m.querySelector('#oErr').textContent = 'PIN sedang dikunci karena terlalu banyak salah.'; return; }
+        st.pinFor = Number(t.dataset.unlock); paintItems(); const pi = m.querySelector('#uPin'); if (pi) pi.focus(); return; }
+      if (t.dataset.unlockCancel) { st.pinFor = null; paintItems(); return; }
+      if (t.dataset.unlockOk !== undefined) {
+        const i = Number(t.dataset.unlockOk); const pin = m.querySelector('#uPin').value; const why = m.querySelector('#uWhy').value.trim(); const ue = m.querySelector('#uErr');
+        if (!why) { ue.textContent = 'Tulis alasan ubah harga'; return; }
+        if (pin !== String(S.settings.pin || '1234')) {
+          const l = pinLock(); const fails = (l.fails || 0) + 1; audit('pin_salah', { aksi: 'Ubah harga ' + st.items[i].service, ke: fails });
+          if (fails >= PIN_MAX_FAIL) { setPinLock({ until: Date.now() + PIN_LOCK_MIN * 60000 }); audit('pin_terkunci', { aksi: 'Ubah harga' }); st.pinFor = null; paintItems(); m.querySelector('#oErr').textContent = 'PIN dikunci ' + PIN_LOCK_MIN + ' menit.'; return; }
+          setPinLock({ fails }); ue.textContent = `PIN salah (${fails}/${PIN_MAX_FAIL})`; return;
+        }
+        setPinLock({}); st.items[i].unlocked = true; st.items[i].overrideReason = why; st.pinFor = null; paintItems();
+        const pi = m.querySelector(`[data-price="${i}"]`); if (pi) { pi.focus(); pi.select(); } return; }
+      if (t.dataset.pay) { st.payMode = t.dataset.pay; paintPay(); return; }
+      if (t.dataset.m) { st.method = t.dataset.m; m.querySelectorAll('[data-m]').forEach((b) => b.classList.toggle('on', b.dataset.m === st.method)); m.querySelector('#oProofBox').style.display = st.method === 'Tunai' ? 'none' : ''; m.querySelector('#oProofBox b').textContent = '📷 Foto bukti ' + st.method; return; }
+      if (t.dataset.a === 'cancel') return closeModal();
+      if (t.dataset.a !== 'save') return;
+      // Validasi
+      const err = (msg) => { m.querySelector('#oErr').textContent = msg; };
+      const name = nameIn.value.trim(); const phone = m.querySelector('#oPhone').value.trim();
+      if (!name) return err('Nama pelanggan wajib diisi');
+      if (!st.items.length) return err('Pilih minimal satu layanan');
+      if (st.items.some((i) => qtyNum(i.qty) <= 0)) return err('Isi jumlah (kg/pcs) untuk setiap layanan');
+      const tot = total(); const paid = st.payMode === 'lunas' ? tot : st.payMode === 'dp' ? Math.min(tot, num(st.dp)) : 0;
+      if (st.payMode === 'dp' && paid <= 0) return err('Isi jumlah DP');
+      if (paid > 0 && st.method !== 'Tunai' && !getPhoto()) return err('Foto bukti ' + st.method + ' wajib dilampirkan');
+      if (needScale() && !getScale()) return err('Foto timbangan wajib untuk cucian kiloan');
+      if (tot <= 0) return err('Total tidak boleh Rp0');
+      t.disabled = true; t.textContent = 'Menyimpan…';
+      try {
+        const now = new Date().toISOString();
+        let custId = st.custId;
+        if (!custId) {
+          const existing = Object.values(S.customers).find((c) => (phone && waPhone(c.phone) === waPhone(phone)) || (!phone && String(c.name).toLowerCase() === name.toLowerCase()));
+          if (existing) custId = existing.id;
+          else { const ref = S.db.collection('customers').doc(); custId = ref.id; await setDoc(ref.path, { name, phone, notes: '', createdAt: now }); }
+        } else if (phone && S.customers[custId] && S.customers[custId].phone !== phone) {
+          await setDoc('customers/' + custId, { ...stripId(S.customers[custId]), phone });
+        }
+        const payments = [];
+        if (paid > 0) { const pr = st.method !== 'Tunai' ? await uploadProof(getPhoto()) : {}; payments.push({ amount: paid, method: st.method, at: now, by: byNow(), ...pr }); }
+        const dueVal = m.querySelector('#oDue').value;
+        const sc = needScale() ? await uploadProof(getScale()) : {};
+        const items = st.items.map((i) => { const price = num(i.price); const it = { service: i.service, unit: i.unit, qty: qtyNum(i.qty), price };
+          if (price !== Number(i.basePrice)) it.priceOverride = { from: Number(i.basePrice), to: price, reason: i.overrideReason || '' }; return it; });
+        const body = { no: nextNo(), customerId: custId, name, phone, notes: m.querySelector('#oNotes').value.trim(), scaleProofId: sc.proofId || '',
+          items,
+          total: tot, status: 'masuk', createdAt: now, createdBy: byNow(), shiftId: S.shift ? S.shift.id : '', dueAt: dueVal ? new Date(dueVal).toISOString() : '', payments };
+        const ref = S.db.collection('orders').doc();
+        await setDoc(ref.path, body);
+        S.ordersActive[ref.id] = { id: ref.id, ...body };
+        items.filter((i) => i.priceOverride).forEach((i) => audit('ubah_harga', { no: body.no, orderId: ref.id, layanan: i.service, dari: i.priceOverride.from, jadi: i.priceOverride.to,
+          selisih: Math.round((i.priceOverride.to - i.priceOverride.from) * i.qty), alasan: i.priceOverride.reason }));
+        showNota({ id: ref.id, ...body }, true);
+      } catch (ex) {
+        t.disabled = false; t.textContent = 'Simpan';
+        if (ex && ex.code === 'no_assets') err('Foto tidak bisa diunggah di perangkat ini. Pilih Tunai atau coba lagi.');
+        else { closeModal(); writeErr(ex); }
+      }
+    });
+    paintPay();
+  });
+}
+const stripId = (o) => { const { id, ...rest } = o; return rest; };
+function nextNo() {
+  const k = todayKey(); const d = parseKey(k);
+  const prefix = `MX-${String(d.getFullYear()).slice(2)}${pad2(d.getMonth() + 1)}${pad2(d.getDate())}-`;
+  const used = Object.values(orders()).filter((o) => String(o.no || '').startsWith(prefix)).map((o) => Number(String(o.no).slice(prefix.length)) || 0);
+  return prefix + String((used.length ? Math.max(...used) : 0) + 1).padStart(3, '0');
+}
+
+/* ---------------- Nota ---------------- */
+function notaText(o) {
+  const s = S.settings; const ps = payState(o);
+  const lines = [`*${s.shopName || 'MAXX LAUNDRY'}*`, s.address || '', s.phone ? `WA ${s.phone}` : '', '',
+    `No. Nota : ${o.no}`, `Tanggal  : ${tgl(o.createdAt)}`, `Pelanggan: ${o.name}`, '-----------------------------',
+    ...(o.items || []).map((i) => `${i.service}\n  ${fmtQty(i.qty)} ${i.unit} x ${rp(i.price)} = ${rp(i.qty * i.price)}`),
+    '-----------------------------', `TOTAL    : ${rp(o.total)}`,
+    ...(o.payments || []).map((p) => `Bayar    : ${rp(p.amount)} (${p.method})`),
+    ps === 'lunas' ? 'Status   : LUNAS' : `Sisa     : ${rp(dueOf(o))}`,
+    o.status === 'diambil' ? `Diambil  : ${tgl(o.pickedAt)}` : `Selesai  : ${o.dueAt ? tglHari(o.dueAt) : '-'}`,
+    o.notes ? `Catatan  : ${o.notes}` : '', '', 'Terima kasih 🙏'];
+  return lines.filter((l, i) => l !== '' || (i > 0 && lines[i - 1] !== '')).join('\n').trim();
+}
+/* ---------------- Struk printer thermal (ESC/POS lewat aplikasi RawBT) ---------------- */
+const toAscii = (str) => String(str ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '')
+  .replace(/[·•]/g, '-').replace(/[–—]/g, '-').replace(/[‘’]/g, "'").replace(/[“”]/g, '"').replace(/[^\x20-\x7E]/g, '');
+const money = (n) => Math.round(Number(n) || 0).toLocaleString('id-ID');
+const paperW = () => (String(S.settings.paper || '58') === '80' ? 48 : 32);
+function wrapText(t, W) {
+  const out = []; let line = '';
+  toAscii(t).split(/\s+/).filter(Boolean).forEach((w) => {
+    while (w.length > W) { if (line) { out.push(line); line = ''; } out.push(w.slice(0, W)); w = w.slice(W); }
+    if (!line) line = w; else if ((line + ' ' + w).length <= W) line += ' ' + w; else { out.push(line); line = w; }
+  });
+  if (line) out.push(line); return out.length ? out : [''];
+}
+const lr = (l, r, W) => { l = toAscii(l); r = toAscii(r); const sp = W - l.length - r.length; return sp >= 1 ? l + ' '.repeat(sp) + r : (l.slice(0, Math.max(0, W - r.length - 1)) + ' ' + r); };
+const dtShort = (iso) => { const d = new Date(iso); return `${pad2(d.getDate())}/${pad2(d.getMonth() + 1)}/${String(d.getFullYear()).slice(2)} ${hm(iso)}`; };
+/* Baris struk: {t, c(enter), b(old), big} */
+function receiptLines(o) {
+  const W = paperW(); const s = S.settings; const L = []; const hr = { t: '-'.repeat(W) };
+  const add = (t, f = {}) => L.push({ t: toAscii(t), ...f });
+  add(s.shopName || 'MAXX LAUNDRY', { c: 1, b: 1, big: 1 });
+  wrapText(s.address || '', W).forEach((x) => x && add(x, { c: 1 }));
+  if (s.phone) add('WA ' + s.phone, { c: 1 });
+  L.push(hr);
+  add(lr('No', o.no, W)); add(lr('Tanggal', dtShort(o.createdAt), W)); add(lr('Pelanggan', o.name, W));
+  if (o.createdBy) add(lr('Kasir', o.createdBy, W));
+  L.push(hr);
+  (o.items || []).forEach((i) => { wrapText(i.service, W).forEach((x) => add(x, { b: 1 }));
+    add(lr(` ${fmtQty(i.qty)} ${i.unit} x ${money(i.price)}`, money(i.qty * i.price), W)); });
+  L.push(hr);
+  add(lr('TOTAL', 'Rp ' + money(o.total), W), { b: 1 });
+  (o.payments || []).forEach((p) => add(lr(`Bayar ${p.method}`, money(p.amount), W)));
+  const sisa = dueOf(o);
+  add(lr(sisa > 0 ? 'SISA BAYAR' : 'STATUS', sisa > 0 ? 'Rp ' + money(sisa) : 'LUNAS', W), { b: 1 });
+  L.push(hr);
+  if (o.status === 'diambil') add(lr('Diambil', dtShort(o.pickedAt), W));
+  else if (o.dueAt) add(lr('Estimasi selesai', dtShort(o.dueAt), W));
+  if (o.rack && o.rack !== '-' && o.status === 'siap') add(lr('Rak', o.rack, W));
+  if (o.notes) { add('Catatan:'); wrapText(o.notes, W).forEach((x) => add(x)); }
+  L.push({ t: '' });
+  wrapText(s.footer || 'Terima kasih. Simpan struk ini untuk pengambilan cucian.', W).forEach((x) => add(x, { c: 1 }));
+  return L;
+}
+function receiptPreview(o) {
+  const W = paperW();
+  return receiptLines(o).map((l) => {
+    const t = l.c ? ' '.repeat(Math.max(0, Math.floor((W - (l.big ? l.t.length * 2 : l.t.length)) / 2))) + l.t : l.t;
+    const inner = esc(t);
+    return l.big ? `<b style="font-size:1.35em;letter-spacing:.12em">${inner}</b>` : l.b ? `<b>${inner}</b>` : inner;
+  }).join('\n');
+}
+function receiptPlain(o) {
+  const W = paperW();
+  return receiptLines(o).map((l) => (l.c ? ' '.repeat(Math.max(0, Math.floor((W - l.t.length) / 2))) : '') + l.t).join('\n');
+}
+function escposBase64(o, copies = 1) {
+  const bytes = [];
+  const push = (...b) => bytes.push(...b);
+  const text = (t) => { for (const ch of t) bytes.push(ch.charCodeAt(0) & 0x7F); };
+  for (let c = 0; c < copies; c++) {
+    push(0x1B, 0x40); // init
+    receiptLines(o).forEach((l) => {
+      push(0x1B, 0x61, l.c ? 1 : 0); push(0x1B, 0x45, l.b || l.big ? 1 : 0); push(0x1D, 0x21, l.big ? 0x11 : 0x00);
+      text(l.t); push(0x0A);
+    });
+    push(0x1B, 0x45, 0, 0x1D, 0x21, 0, 0x1B, 0x61, 0);
+    if (c === 0 && copies > 1) { text('-'.repeat(paperW())); push(0x0A); }
+    push(0x1B, 0x64, 4); // feed 4 baris
+    push(0x1D, 0x56, 0x42, 0x00); // potong (diabaikan printer tanpa cutter)
+  }
+  let bin = ''; bytes.forEach((b) => { bin += String.fromCharCode(b); });
+  return btoa(bin);
+}
+const rawbtUrl = (o, copies) => `intent:base64,${escposBase64(o, copies)}#Intent;scheme=rawbt;package=ru.a402d.rawbtprinter;end;`;
+
+function showNota(o, fresh) {
+  const txt = notaText(o); const ph = waPhone(o.phone);
+  openModal(`<h3>${fresh ? '✅ Tersimpan' : 'Nota'} · ${esc(o.no)}</h3><div class="muted small" style="margin-bottom:10px">Cetak struk ke printer thermal, atau kirim ke WhatsApp pelanggan.</div>
+    <div class="nota" style="max-width:${paperW() === 32 ? 300 : 420}px;margin:0 auto;font-size:12px">${receiptPreview(o)}</div>
+    <div class="row" style="margin-top:14px;gap:8px">
+      <a class="btn lg" style="flex:2;text-align:center;text-decoration:none" data-print="1" href="${rawbtUrl(o, 1)}">🖨️ Cetak Struk</a>
+      <a class="btn ghost" style="flex:1;text-align:center;text-decoration:none;padding:16px 8px" data-print="2" href="${rawbtUrl(o, 2)}">Cetak 2x</a></div>
+    <div class="actions" style="flex-wrap:wrap;margin-top:10px">
+      ${ph ? `<a class="btn outline" style="text-align:center;text-decoration:none" target="_blank" rel="noopener" href="https://wa.me/${ph}?text=${encodeURIComponent(txt)}">Kirim ke WA</a>` : ''}
+      <button class="btn ghost" data-a="copyprint">Salin struk</button><button class="btn ghost" data-a="close">Tutup</button></div>
+    <details style="margin-top:10px"><summary class="muted small" style="cursor:pointer">Struk tidak keluar?</summary>
+      <div class="muted small" style="margin-top:6px;line-height:1.5">1. Pasang aplikasi <b>RawBT</b> dari Play Store, buka, pilih printer Bluetooth, dan atur lebar kertas ${S.settings.paper === '80' ? '80' : '58'} mm.<br>
+      2. Pastikan aplikasi ini dibuka lewat <b>Chrome</b> (atau ikon yang dipasang dari Chrome), lalu tekan Cetak Struk lagi.<br>
+      3. Cara cadangan: tekan <b>Salin struk</b>, buka RawBT, lalu tempel (paste) dan cetak.</div></details>
+    ${ph ? `<div class="muted small" style="margin-top:8px">Nomor WA: ${esc(o.phone)}</div>` : '<div class="muted small" style="margin-top:8px">Isi no. HP pelanggan untuk kirim langsung ke WA.</div>'}`,
+  (m) => m.addEventListener('click', async (e) => {
+    const wa = e.target.closest('a[href^="https://wa.me"]');
+    if (wa && o.id && orders()[o.id] && !orders()[o.id].waSentAt) saveOrder(o.id, { waSentAt: new Date().toISOString() }).catch(() => {});
+    const pr = e.target.closest('[data-print]');
+    if (pr && window.MaxxPrinter && typeof window.MaxxPrinter.postMessage === 'function') {
+      // Aplikasi APK: cetak langsung ke printer Bluetooth tanpa RawBT.
+      e.preventDefault(); window.MaxxPrinter.postMessage(escposBase64(o, Number(pr.dataset.print))); toast('Mengirim ke printer…'); return;
+    }
+    const a = e.target.dataset.a; if (!a) return;
+    if (a === 'close') return closeModal();
+    if (a === 'copyprint') { try { await navigator.clipboard.writeText(receiptPlain(o)); toast('Struk disalin. Tempel di aplikasi RawBT untuk mencetak.'); } catch (er) { toast('Tidak bisa menyalin di perangkat ini'); } }
+  }));
+}
+
+/* ---------------- Detail, status & pembayaran ---------------- */
+function orderDetail(id) {
+  const o = orders()[id]; if (!o) return;
+  const st = STATUS[o.status]; const ps = payState(o); const ed = S.canWrite && !isVoid(o);
+  const hist = [['Masuk', o.createdAt, o.createdBy], ['Dicuci', o.procAt, o.procBy], ['Selesai', o.doneAt, o.doneBy], ['Diambil', o.pickedAt, o.pickedBy]].filter(([, t]) => t);
+  openModal(`<div class="row"><h3>${esc(o.name)}</h3><span class="spacer"></span><span class="pill st-${o.status}">${st.label}</span></div>
+    <div class="muted small">${esc(o.no)}${o.phone ? ' · ' + esc(o.phone) : ''}</div>
+    ${o.rack && o.rack !== '-' && o.status !== 'diambil' ? `<div style="margin-top:8px"><span class="rack">📍 ${esc(o.rack)}</span></div>` : ''}
+    <div class="card" style="margin-top:12px;padding:12px">
+      ${(o.items || []).map((i) => `<div class="sum"><span>${esc(i.service)} <span class="muted">${fmtQty(i.qty)} ${esc(i.unit)} × ${rp(i.price)}</span>${i.priceOverride ? `<br><span class="small" style="color:var(--warn)">Harga diubah dari ${rp(i.priceOverride.from)}: ${esc(i.priceOverride.reason)}</span>` : ''}</span><span>${rp(i.qty * i.price)}</span></div>`).join('')}
+      ${o.scaleProofId ? `<div class="sum"><span class="muted">Foto timbangan</span><a href="#" data-proof-id="${esc(o.scaleProofId)}" data-photo="${esc(imgSrc(o.scaleProofId, ''))}" style="color:var(--pink)">lihat</a></div>` : ''}
+      <div class="sum big"><span>Total</span><span>${rp(o.total)}</span></div>
+      ${(o.payments || []).map((p) => `<div class="sum"><span class="muted">Bayar ${esc(p.method)} · ${tgl(p.at)}${p.by ? ' · ' + esc(p.by) : ''} ${p.proofId || p.proofUrl ? `<a href="#" data-proof-id="${esc(p.proofId || '')}" data-photo="${esc(imgSrc(p.proofId, p.proofUrl))}" style="color:var(--pink)">lihat bukti</a>` : ''}</span><span class="amt-in">${rp(p.amount)}</span></div>${p.method !== 'Tunai' ? `<div class="small" style="margin:-4px 0 6px;color:${p.verified ? (p.verified.ok ? 'var(--ok)' : 'var(--bad)') : 'var(--muted)'}">${p.verified ? (p.verified.ok ? '✓ Sudah dicocokkan owner' : '✗ Tidak ditemukan di mutasi') : 'Belum dicocokkan owner'}</div>` : ''}`).join('')}
+      ${o.unpaidPickup && ps !== 'lunas' ? '<div class="banner" style="margin:8px 0 0">Diambil tanpa bayar penuh. Tagih sisa ke pelanggan.</div>' : ''}
+      <div class="sum"><span><span class="pill pay-${ps}">${PAY_LABEL[ps]}</span></span><span>${ps !== 'lunas' ? 'Sisa <b>' + rp(dueOf(o)) + '</b>' : ''}</span></div>
+    </div>
+    ${isVoid(o) ? `<div class="banner" style="margin-top:10px;color:var(--bad);border-color:rgba(248,113,113,.4);background:rgba(248,113,113,.08)">Dibatalkan ${tgl(o.voidAt)} oleh ${esc(o.voidBy || '-')}. Alasan: ${esc(o.voidReason || '-')}</div>` : ''}
+    ${o.notes ? `<p><span class="muted small">Catatan:</span><br>${esc(o.notes)}</p>` : ''}
+    <div class="muted small" style="margin-top:10px">${hist.map(([l, t, b]) => `${l}: ${tgl(t)}${b ? ' (' + esc(b) + ')' : ''}`).join('<br>')}${o.status !== 'diambil' && o.dueAt ? `<br>Estimasi selesai: ${tglHari(o.dueAt)}` : ''}</div>
+    ${ed && st.next ? `<button class="btn lg ${o.status === 'siap' ? 'ok' : ''}" style="margin-top:16px" data-a="adv">${st.action}</button>` : ''}
+    <div class="actions" style="flex-wrap:wrap">
+      ${ed && ps !== 'lunas' ? '<button class="btn outline" data-a="pay">Terima Bayar</button>' : ''}
+      ${isVoid(o) ? '' : '<button class="btn ghost" data-a="nota">🖨️ Struk / WA</button>'}
+      ${ed && o.status !== 'masuk' ? '<button class="btn ghost" data-a="back">↩ Mundurkan status</button>' : ''}
+      ${ed ? '<button class="btn danger" data-a="del">Batalkan</button>' : ''}
+    </div>`,
+  (m) => m.addEventListener('click', (e) => {
+    const ph = e.target.closest('[data-photo]'); if (ph) { e.preventDefault(); viewPhoto(ph.dataset.photo); return; }
+    const a = e.target.dataset.a; if (!a) return;
+    if (a === 'adv') return needShift(() => advance(id));
+    if (a === 'pay') return needShift(() => payForm(id, false));
+    if (a === 'nota') return showNota(orders()[id]);
+    if (a === 'back') return askPin('Mundurkan status ' + o.no, () => stepBack(id));
+    if (a === 'del') return askPin('Batalkan cucian ' + o.no, () => voidForm(id));
+  }));
+}
+async function saveOrder(id, patch) {
+  const o = orders()[id]; const body = { ...stripId(o), ...patch };
+  await setDoc('orders/' + id, body);
+}
+async function advance(id, rackGiven) {
+  const o = orders()[id]; if (!o) return; const st = STATUS[o.status]; if (!st.next) return;
+  if (st.next === 'diambil' && dueOf(o) > 0) return payForm(id, true);
+  const now = new Date().toISOString();
+  const patch = { status: st.next };
+  if (st.next === 'proses') { patch.procAt = now; patch.procBy = byNow(); }
+  if (st.next === 'siap') { patch.doneAt = now; patch.doneBy = byNow(); }
+  if (st.next === 'diambil') { patch.pickedAt = now; patch.pickedBy = byNow(); }
+  if (st.next === 'siap' && !rackGiven) return rackForm(id);
+  if (st.next === 'siap') patch.rack = rackGiven;
+  closeModal();
+  try {
+    await saveOrder(id, patch);
+    if (st.next === 'siap' && o.phone) {
+      const msg = `Halo ${o.name}, cucian Anda (${o.no}) di ${S.settings.shopName || 'Maxx Laundry'} sudah selesai dan siap diambil.` + (dueOf(o) > 0 ? ` Total yang perlu dibayar: ${rp(dueOf(o))}.` : '') + ' Terima kasih 🙏';
+      openModal(`<h3>✅ Siap diambil</h3><p class="muted">Kabari ${esc(o.name)} lewat WhatsApp?</p>
+        <div class="actions"><button class="btn ghost" data-a="no">Nanti saja</button><a class="btn" style="text-align:center;text-decoration:none" target="_blank" rel="noopener" data-a="no" href="https://wa.me/${waPhone(o.phone)}?text=${encodeURIComponent(msg)}">Kirim WA</a></div>`,
+      (m) => m.addEventListener('click', (e) => { if (e.target.dataset.a) setTimeout(closeModal, 50); }));
+    } else toast(`${o.no}: ${STATUS[st.next].label}`);
+  } catch (er) { writeErr(er); }
+}
+function rackForm(id) {
+  const o = orders()[id];
+  openModal(`<h3>Cucian selesai 🎉</h3><div class="muted">${esc(o.name)} · ${esc(o.no)}</div>
+    <label class="f">Disimpan di rak / kantong mana?</label><input class="in" id="rk" placeholder="mis. A3, Rak 2, Kantong 15" autocomplete="off" value="${esc(o.rack || '')}">
+    <div class="muted small" style="margin-top:6px">Ditulis supaya cepat ditemukan saat pelanggan datang. Boleh dikosongkan.</div>
+    <div class="actions"><button class="btn ghost" data-a="cancel">Batal</button><button class="btn" data-a="ok">Simpan, Siap Ambil</button></div>`,
+  (m) => { setTimeout(() => m.querySelector('#rk').focus(), 50); m.addEventListener('click', (e) => { const a = e.target.dataset.a; if (!a) return; if (a === 'cancel') return closeModal(); advance(id, m.querySelector('#rk').value.trim() || '-'); }); });
+}
+function voidForm(id) {
+  const o = orders()[id]; const paid = paidOf(o);
+  openModal(`<h3>Batalkan ${esc(o.no)}?</h3><div class="muted">${esc(o.name)} · ${rp(o.total)}</div>
+    ${paid ? `<div class="banner" style="margin-top:10px">Sudah ada pembayaran ${rp(paid)}. Uang itu harus dikembalikan ke pelanggan: pembayaran ini tidak lagi dihitung sebagai pemasukan dan laci kasir.</div>` : ''}
+    <label class="f">Alasan pembatalan (wajib)</label><input class="in" id="vWhy" placeholder="mis. salah input, pelanggan batal">
+    <div class="err" id="vErr"></div>
+    <div class="actions"><button class="btn ghost" data-a="no">Kembali</button><button class="btn danger" data-a="yes">Batalkan Cucian</button></div>
+    <p class="muted small">Cucian yang dibatalkan tidak dihapus: tetap tersimpan dengan nomor notanya dan terlihat oleh owner.</p>`,
+  (m) => m.addEventListener('click', async (e) => {
+    const a = e.target.dataset.a; if (!a) return; if (a === 'no') return closeModal();
+    const why = m.querySelector('#vWhy').value.trim(); if (!why) { m.querySelector('#vErr').textContent = 'Tulis alasan pembatalan'; return; }
+    closeModal();
+    try {
+      await saveOrder(id, { status: 'batal', prevStatus: o.status, voidAt: new Date().toISOString(), voidBy: byNow(), voidReason: why });
+      audit('batal_cucian', { no: o.no, orderId: id, total: o.total, sudahDibayar: paid, statusSebelumnya: o.status, alasan: why });
+      toast(o.no + ' dibatalkan');
+    } catch (er) { writeErr(er); }
+  }));
+}
+async function stepBack(id) {
+  const o = orders()[id]; const prev = { proses: 'masuk', siap: 'proses', diambil: 'siap' }[o.status]; if (!prev) return;
+  const patch = { status: prev }; if (o.status === 'proses') patch.procAt = ''; if (o.status === 'siap') patch.doneAt = ''; if (o.status === 'diambil') patch.pickedAt = '';
+  closeModal(); try { await saveOrder(id, patch); audit('mundur_status', { no: o.no, orderId: id, dari: o.status, ke: prev }); toast('Status dikembalikan ke ' + STATUS[prev].label); } catch (er) { writeErr(er); }
+}
+function payForm(id, andPickup) {
+  const o = orders()[id]; const sisa = dueOf(o); let method = 'Tunai';
+  openModal(`<h3>${andPickup ? 'Pembayaran & Pengambilan' : 'Terima Pembayaran'}</h3>
+    <div class="muted">${esc(o.name)} · ${esc(o.no)}</div>
+    <div class="card" style="margin-top:12px;padding:12px"><div class="sum"><span class="muted">Total</span><span>${rp(o.total)}</span></div>
+      <div class="sum"><span class="muted">Sudah dibayar</span><span>${rp(paidOf(o))}</span></div><div class="sum big"><span>Sisa</span><span>${rp(sisa)}</span></div></div>
+    <label class="f">Uang diterima</label><input class="in" id="pAmt" inputmode="numeric" value="${sisa}">
+    <div class="muted small" id="pChange" style="margin-top:6px"></div>
+    <label class="f">Metode</label><div class="seg">${METHODS.map((x) => `<button type="button" data-m="${x}" class="${x === method ? 'on' : ''}">${x}</button>`).join('')}</div>
+    <div id="pProofBox" style="margin-top:10px;display:none">${photoPicker('pProof', 'Foto bukti pembayaran')}</div>
+    <div class="err" id="pErr"></div>
+    <div class="actions"><button class="btn ghost" data-a="cancel">Batal</button>
+      ${andPickup ? '<button class="btn ghost" data-a="nopay">Ambil tanpa bayar</button>' : ''}
+      <button class="btn ${andPickup ? 'ok' : ''}" data-a="save">${andPickup ? 'Bayar & Diambil' : 'Simpan'}</button></div>`,
+  (m) => {
+    const getPhoto = bindPhoto(m, 'pProof');
+    const paintChange = () => {
+      const v = Math.round(num(m.querySelector('#pAmt').value)); const el = m.querySelector('#pChange');
+      if (v > sisa && method === 'Tunai') el.innerHTML = `Kembalian: <b style="color:var(--warn)">${rp(v - sisa)}</b> · tercatat masuk ${rp(sisa)}`;
+      else if (v > 0 && v < sisa) el.textContent = `Masih kurang ${rp(sisa - v)} (dicatat sebagai cicilan)`;
+      else el.textContent = '';
+    };
+    m.querySelector('#pAmt').addEventListener('input', paintChange);
+    m.addEventListener('click', async (e) => {
+      const t = e.target.closest('button'); if (!t) return;
+      if (t.dataset.m) { method = t.dataset.m; m.querySelectorAll('[data-m]').forEach((b) => b.classList.toggle('on', b.dataset.m === method)); m.querySelector('#pProofBox').style.display = method === 'Tunai' ? 'none' : ''; paintChange(); return; }
+      const a = t.dataset.a; if (!a) return;
+      if (a === 'cancel') return closeModal();
+      const now = new Date().toISOString();
+      if (a === 'nopay') {
+        // Rawan disalahgunakan: wajib PIN admin.
+        askPin('Ambil tanpa bayar (sisa ' + rp(sisa) + ')', async () => {
+          try { await saveOrder(id, { status: 'diambil', pickedAt: now, pickedBy: byNow(), unpaidPickup: true }); audit('ambil_tanpa_bayar', { no: o.no, orderId: id, sisa }); toast('Diambil, masih ada sisa ' + rp(sisa)); } catch (er) { writeErr(er); }
+        });
+        return;
+      }
+      const given = Math.round(num(m.querySelector('#pAmt').value));
+      const pe = m.querySelector('#pErr');
+      if (given <= 0) { pe.textContent = 'Isi jumlah yang dibayar'; return; }
+      if (given > sisa && method !== 'Tunai') { pe.textContent = 'Pembayaran ' + method + ' tidak boleh melebihi sisa ' + rp(sisa); return; }
+      if (method !== 'Tunai' && !getPhoto()) { pe.textContent = 'Foto bukti ' + method + ' wajib dilampirkan'; return; }
+      const amt = Math.min(given, sisa);
+      if (andPickup && amt < sisa) { pe.textContent = 'Pembayaran kurang ' + rp(sisa - amt) + '. Lunasi dulu, atau pakai "Ambil tanpa bayar".'; return; }
+      t.disabled = true; t.textContent = 'Menyimpan…';
+      try {
+        const pr = method !== 'Tunai' ? await uploadProof(getPhoto()) : {};
+        const payments = [...(o.payments || []), { amount: amt, method, at: now, by: byNow(), ...pr }];
+        const patch = { payments }; if (andPickup) { patch.status = 'diambil'; patch.pickedAt = now; patch.pickedBy = byNow(); }
+        closeModal(); await saveOrder(id, patch);
+        toast(`Diterima ${rp(amt)} (${method})${andPickup ? ' · Diambil' : ''}${given > amt ? ' · Kembalian ' + rp(given - amt) : ''}`);
+      } catch (er) {
+        t.disabled = false; t.textContent = 'Simpan';
+        if (er && er.code === 'no_assets') m.querySelector('#pErr').textContent = 'Foto tidak bisa diunggah di perangkat ini.'; else { closeModal(); writeErr(er); }
+      }
+    });
+  });
+}
+
+/* ---------------- Halaman: Kas ---------------- */
+function unverifiedPays() {
+  const out = [];
+  Object.values(orders()).forEach((o) => !isVoid(o) && (o.payments || []).forEach((p, idx) => { if (p.method !== 'Tunai' && !p.verified) out.push({ ...p, idx, order: o }); }));
+  return out.sort((a, b) => String(a.at).localeCompare(String(b.at)));
+}
+async function verifyPayment(orderId, idx, ok) {
+  const o = orders()[orderId]; if (!o || !isOwner()) return; const payments = (o.payments || []).map((p) => ({ ...p }));
+  const p = payments[idx]; if (!p) return;
+  p.verified = { ok, by: S.email, at: new Date().toISOString() };
+  try { await saveOrder(orderId, { payments }); audit('verifikasi_bayar', { no: o.no, orderId, metode: p.method, jumlah: p.amount, hasil: ok ? 'cocok' : 'TIDAK ADA di mutasi' }); toast(ok ? 'Ditandai cocok' : 'Ditandai TIDAK cocok, cek dengan kasir'); }
+  catch (er) { writeErr(er); }
+}
+function rangeKeys(r) {
+  const t = todayKey(); const d = parseKey(t);
+  if (r === 'today') return [t, t, 'Hari ini'];
+  if (r === 'yesterday') { const y = addDays(t, -1); return [y, y, 'Kemarin']; }
+  if (r === '7d') return [addDays(t, -6), t, '7 hari terakhir'];
+  if (r === 'month') return [dkey(new Date(d.getFullYear(), d.getMonth(), 1)), t, 'Bulan ini'];
+  const s = new Date(d.getFullYear(), d.getMonth() - 1, 1); const e = new Date(d.getFullYear(), d.getMonth(), 0);
+  return [dkey(s), dkey(e), 'Bulan lalu'];
+}
+function viewKas() {
+  const [a, b, label] = rangeKeys(S.kasRange);
+  const pays = paymentsIn(a, b); const exps = expensesIn(a, b); const opEx = exps.filter((e) => !isSetor(e)); const setor = sumBy(exps.filter(isSetor));
+  const inc = sumBy(pays); const out = sumBy(opEx);
+  const cats = {}; opEx.forEach((e) => { cats[e.category] = (cats[e.category] || 0) + Number(e.amount || 0); });
+  const unver = unverifiedPays();
+  return `<div class="row wrap"><div><h2>Kas</h2><p class="sub">Uang masuk dari pelanggan & pengeluaran operasional · ${esc(label)}</p></div><span class="spacer"></span>
+      ${S.canWrite ? '<button class="btn sm" data-act="expense">+ Pengeluaran</button>' : ''}</div>
+    <div class="chips">${[['today', 'Hari ini'], ['yesterday', 'Kemarin'], ['7d', '7 hari'], ['month', 'Bulan ini'], ['lastmonth', 'Bulan lalu']].map(([id, l]) => `<button class="chip ${S.kasRange === id ? 'on' : ''}" data-range="${id}">${l}</button>`).join('')}</div>
+    <div class="grid g-stats">
+      <div class="card stat money"><span>Pemasukan</span><b style="color:var(--ok)">${rp(inc)}</b><em>${pays.length} pembayaran</em></div>
+      <div class="card stat money"><span>Pengeluaran</span><b style="color:var(--bad)">${rp(out)}</b><em>${opEx.length} catatan</em></div>
+      <div class="card stat money"><span>Bersih</span><b>${rp(inc - out)}</b>${setor ? `<em>Disetor ke owner ${rp(setor)}</em>` : ''}</div>
+      ${METHODS.map((m) => `<div class="card stat money"><span>${m} masuk</span><b>${rp(sumBy(pays.filter((p) => p.method === m)))}</b><em>${m === 'Tunai' ? 'Harus ada di laci' : 'Cocokkan dengan mutasi'}</em></div>`).join('')}
+    </div>
+    ${Object.keys(cats).length ? `<div class="card" style="margin-top:12px"><h3>Pengeluaran per kategori</h3>${Object.entries(cats).sort((x, y) => y[1] - x[1]).map(([c, v]) => `<div class="sum"><span>${esc(c)}</span><span class="amt-out">${rp(v)}</span></div>`).join('')}</div>` : ''}
+    ${isOwner() ? `<div class="card risk ${unver.length ? 'md' : 'ok'}" style="margin-top:12px"><div class="row"><h3>QRIS & transfer belum dicocokkan</h3><span class="spacer"></span><span class="pill ${unver.length ? 'pay-dp' : 'pay-lunas'}">${unver.length ? unver.length + ' · ' + rp(sumBy(unver)) : 'Semua cocok'}</span></div>
+      <p class="muted small">Cocokkan dengan mutasi rekening / aplikasi QRIS. Tandai ✓ hanya jika uangnya benar-benar masuk.</p>
+      ${unver.slice(0, 40).map((p) => `<div class="list-row">${p.proofId ? `<img class="thumb" src="${esc(imgSrc(p.proofId, p.proofUrl))}" data-photo="${esc(imgSrc(p.proofId, p.proofUrl))}" alt="">` : ''}
+        <div class="info"><b>${rp(p.amount)} · ${esc(p.method)}</b><span>${esc(p.order.no)} · ${esc(p.order.name)} · ${tgl(p.at)}${p.by ? ' · ' + esc(p.by) : ''}</span></div>
+        <button class="btn sm ok" data-verify="${esc(p.order.id)}|${p.idx}">✓ Cocok</button><button class="btn sm danger" data-noverify="${esc(p.order.id)}|${p.idx}">✗</button></div>`).join('')}</div>` : ''}
+    <div class="card" style="margin-top:12px"><h3>Semua transaksi</h3>${txList(pays, exps)}</div>
+    <div class="card" style="margin-top:12px"><h3>Riwayat shift & hitung laci</h3>${shiftHistory()}</div>`;
+}
+function expenseForm(id) {
+  const e = id ? S.expenses[id] : { date: todayKey(), category: (S.settings.expenseCats || [])[0] || 'Lain-lain', amount: '', method: 'Tunai', note: '' };
+  let method = e.method;
+  openModal(`<h3>${id ? 'Ubah' : 'Catat'} Pengeluaran</h3>
+    <label class="f">Kategori</label><select class="in" id="eCat">${[...(S.settings.expenseCats || DEFAULT_SETTINGS.expenseCats), SETOR].map((c) => `<option ${c === e.category ? 'selected' : ''}>${esc(c)}</option>`).join('')}</select>
+    <div class="muted small" style="margin-top:6px">Pilih <b>${SETOR}</b> saat owner mengambil uang dari laci (bukan pengeluaran usaha).</div>
+    <label class="f">Jumlah</label><input class="in" id="eAmt" inputmode="numeric" placeholder="mis. 45000" value="${esc(e.amount)}">
+    <label class="f">Tanggal</label><input class="in" id="eDate" type="date" value="${esc(e.date)}">
+    <label class="f">Dibayar pakai</label><div class="seg">${METHODS.map((x) => `<button type="button" data-m="${x}" class="${x === method ? 'on' : ''}">${x}</button>`).join('')}</div>
+    <label class="f">Keterangan</label><input class="in" id="eNote" placeholder="mis. Deterjen 5 L" value="${esc(e.note)}">
+    <div style="margin-top:12px">${photoPicker('eProof', 'Foto nota / bukti (wajib jika ≥ Rp50.000)')}</div>
+    ${e.proofId || e.proofUrl ? `<p class="small"><a href="#" data-photo="${esc(imgSrc(e.proofId, e.proofUrl))}" style="color:var(--pink)">Lihat bukti tersimpan</a></p>` : ''}
+    <div class="err" id="eErr"></div>
+    <div class="actions">${id ? '<button class="btn danger" data-a="del">Batalkan</button>' : ''}<button class="btn ghost" data-a="cancel">Batal</button><button class="btn" data-a="save">Simpan</button></div>`,
+  (m) => {
+    const getPhoto = bindPhoto(m, 'eProof');
+    m.addEventListener('click', async (ev) => {
+      const ph = ev.target.closest('[data-photo]'); if (ph) { ev.preventDefault(); viewPhoto(ph.dataset.photo); return; }
+      const t = ev.target.closest('button'); if (!t) return;
+      if (t.dataset.m) { method = t.dataset.m; m.querySelectorAll('[data-m]').forEach((b) => b.classList.toggle('on', b.dataset.m === method)); return; }
+      const a = t.dataset.a; if (!a) return;
+      if (a === 'cancel') return closeModal();
+      if (a === 'del') {
+        closeModal();
+        openModal(`<h3>Batalkan pengeluaran?</h3><div class="muted">${esc(e.category)} · ${rp(e.amount)}</div><label class="f">Alasan (wajib)</label><input class="in" id="xWhy"><div class="err" id="xErr"></div>
+          <div class="actions"><button class="btn ghost" data-b="no">Kembali</button><button class="btn danger" data-b="yes">Batalkan</button></div>`,
+        (m2) => m2.addEventListener('click', async (ev2) => {
+          const b = ev2.target.dataset.b; if (!b) return; if (b === 'no') return closeModal();
+          const w = m2.querySelector('#xWhy').value.trim(); if (!w) { m2.querySelector('#xErr').textContent = 'Tulis alasan'; return; }
+          closeModal();
+          try { await setDoc('expenses/' + id, { ...stripId(e), voided: true, voidAt: new Date().toISOString(), voidBy: byNow(), voidReason: w }); audit('batal_pengeluaran', { kategori: e.category, jumlah: e.amount, alasan: w }); toast('Pengeluaran dibatalkan'); }
+          catch (er) { writeErr(er); }
+        }));
+        return;
+      }
+      const amt = Math.round(num(m.querySelector('#eAmt').value));
+      if (amt <= 0) { m.querySelector('#eErr').textContent = 'Isi jumlah pengeluaran'; return; }
+      if (amt >= 50000 && !getPhoto() && !e.proofId && m.querySelector('#eCat').value !== SETOR) { m.querySelector('#eErr').textContent = 'Pengeluaran Rp50.000 ke atas wajib foto nota'; return; }
+      t.disabled = true; t.textContent = 'Menyimpan…';
+      try {
+        const f = getPhoto(); const pr = f ? await uploadProof(f) : {};
+        const body = { date: m.querySelector('#eDate').value || todayKey(), category: m.querySelector('#eCat').value, amount: amt, method,
+          note: m.querySelector('#eNote').value.trim(), by: e.by || byNow(), proofId: pr.proofId || e.proofId || '', proofUrl: pr.proofUrl || e.proofUrl || '', createdAt: e.createdAt || new Date().toISOString() };
+        const ref = id ? S.db.doc('expenses/' + id) : S.db.collection('expenses').doc();
+        closeModal(); await setDoc(ref.path, body); toast((body.category === SETOR ? 'Setoran ' : 'Pengeluaran ') + rp(amt) + ' dicatat');
+        if (id) audit('ubah_pengeluaran', { kategori: body.category, dari: e.amount, jadi: amt, catatan: body.note });
+        else if (body.category === SETOR) audit('setoran', { jumlah: amt, metode: method });
+      } catch (er) {
+        t.disabled = false; t.textContent = 'Simpan';
+        if (er && er.code === 'no_assets') m.querySelector('#eErr').textContent = 'Foto tidak bisa diunggah di perangkat ini.'; else { closeModal(); writeErr(er); }
+      }
+    });
+  });
+}
+
+/* ---------------- Halaman: Audit & anti-kecurangan (owner) ---------------- */
+const RISKY = ['batal_cucian', 'ubah_harga', 'ambil_tanpa_bayar', 'mundur_status', 'batal_pengeluaran', 'ubah_pengeluaran', 'pin_terkunci', 'modal_beda'];
+function riskCount() {
+  const since = new Date(Date.now() - 86400000).toISOString();
+  const ev = Object.values(S.audit).filter((x) => x.at >= since && RISKY.includes(x.type)).length;
+  const short = Object.values(S.shifts).filter((x) => x.endAt && x.endAt >= since && x.diff < 0).length;
+  return ev + short;
+}
+function serverSkewMin(x) {
+  const sv = x._serverAt; const ms = sv && typeof sv.toMillis === 'function' ? sv.toMillis() : null;
+  return ms ? Math.round(Math.abs(ms - new Date(x.at).getTime()) / 60000) : 0;
+}
+function missingNotaNumbers(fromKey, toKey) {
+  const byDay = {};
+  Object.values(orders()).forEach((o) => { const k = keyOf(o.createdAt); if (k < fromKey || k > toKey) return; const m = /^(MX-\d{6})-(\d+)$/.exec(o.no || ''); if (m) (byDay[m[1]] = byDay[m[1]] || []).push(Number(m[2])); });
+  const out = [];
+  Object.entries(byDay).forEach(([pre, nums]) => { const max = Math.max(...nums); for (let i = 1; i <= max; i++) if (!nums.includes(i)) out.push(`${pre}-${String(i).padStart(3, '0')}`); });
+  return out;
+}
+function viewAudit() {
+  const r = S.auditRange; const [a, b, label] = rangeKeys(r === '7d' ? '7d' : r);
+  const inR = (iso) => { const k = keyOf(iso); return k >= a && k <= b; };
+  const ev = Object.values(S.audit).filter((x) => inR(x.at)).sort((x, y) => String(y.at).localeCompare(String(x.at)));
+  const of = (t) => ev.filter((x) => x.type === t);
+  const shifts = Object.values(S.shifts).filter((x) => x.endAt && inR(x.endAt));
+  const kurang = shifts.filter((x) => x.diff < 0); const lebih = shifts.filter((x) => x.diff > 0);
+  const live = Object.values(orders()).filter((o) => !isVoid(o));
+  const ordR = live.filter((o) => inR(o.createdAt));
+  const noPhone = ordR.filter((o) => !o.phone).length; const noWa = ordR.filter((o) => o.phone && !o.waSentAt).length;
+  const unver = unverifiedPays(); const bad = []; live.forEach((o) => (o.payments || []).forEach((p) => { if (p.verified && !p.verified.ok) bad.push({ ...p, order: o }); }));
+  const lama = live.filter((o) => o.status === 'siap' && o.doneAt && Date.now() - new Date(o.doneAt) > 7 * 86400000);
+  const openLong = S.shift && Date.now() - new Date(S.shift.startAt) > 14 * 3600000;
+  const skew = ev.filter((x) => serverSkewMin(x) > 10);
+  const missing = missingNotaNumbers(a, b);
+  const card = (lvl, title, val, sub) => `<div class="card stat risk ${lvl}"><span>${title}</span><b>${val}</b><em>${sub}</em></div>`;
+  const lv = (n, hi = 1) => (n >= hi ? 'hi' : n > 0 ? 'md' : 'ok');
+
+  // Ringkasan per kasir
+  const per = {};
+  const P = (n) => (per[n || '-'] = per[n || '-'] || { shift: 0, selisih: 0, batal: 0, harga: 0, tanpaBayar: 0, pinSalah: 0 });
+  shifts.forEach((x) => { const q = P(x.cashier); q.shift++; q.selisih += Number(x.diff) || 0; });
+  of('batal_cucian').forEach((x) => P(x.by).batal++); of('ubah_harga').forEach((x) => P(x.by).harga++);
+  of('ambil_tanpa_bayar').forEach((x) => P(x.by).tanpaBayar++); of('pin_salah').forEach((x) => P(x.by).pinSalah++);
+
+  const detail = (x) => {
+    const d = { ...x }; ['type', 'at', 'by', 'email', 'role', 'shiftId', '_serverAt', 'id', 'orderId'].forEach((k) => delete d[k]);
+    return Object.entries(d).map(([k, v]) => `${esc(k)}: <b>${esc(typeof v === 'number' && Math.abs(v) >= 1000 ? rp(v) : v)}</b>`).join(' · ');
+  };
+  return `<h2>🛡️ Audit & Anti-Kecurangan</h2><p class="sub">Hanya terlihat oleh owner · ${esc(label)}</p>
+    <div class="chips">${[['today', 'Hari ini'], ['7d', '7 hari'], ['month', 'Bulan ini'], ['lastmonth', 'Bulan lalu']].map(([id, l]) => `<button class="chip ${r === id ? 'on' : ''}" data-arange="${id}">${l}</button>`).join('')}</div>
+    ${String(S.settings.pin) === '1234' ? '<div class="banner" style="color:var(--bad);border-color:rgba(248,113,113,.5);background:rgba(248,113,113,.08)">⚠️ PIN admin masih 1234 (mudah ditebak). Ganti di Pengaturan sekarang.</div>' : ''}
+    ${openLong ? `<div class="banner">Shift ${esc(S.shift.cashier)} sudah berjalan lebih dari 14 jam tanpa ditutup. Minta kasir tutup shift dan hitung laci.</div>` : ''}
+    <h3 style="margin:6px 0 10px">Uang</h3>
+    <div class="grid g-stats">
+      ${card(lv(kurang.length), 'Kas laci kurang', rp(-sumBy(kurang, (x) => x.diff)), `${kurang.length} dari ${shifts.length} shift`)}
+      ${card(lv(lebih.length, 3), 'Kas laci lebih', rp(sumBy(lebih, (x) => x.diff)), 'Lebih juga perlu dicek (salah catat?)')}
+      ${card(lv(unver.length, 10), 'QRIS/transfer belum dicek', unver.length, rp(sumBy(unver)) + ' · cek di menu Kas')}
+      ${card(lv(bad.length), 'Tidak ada di mutasi', bad.length, rp(sumBy(bad)) + ' · ditandai ✗')}
+      ${card(lv(of('ambil_tanpa_bayar').length), 'Diambil tanpa bayar', of('ambil_tanpa_bayar').length, rp(sumBy(of('ambil_tanpa_bayar'), (x) => x.sisa)))}
+      ${card(lv(of('modal_beda').length), 'Modal awal beda', of('modal_beda').length, 'Uang laci antar shift tidak nyambung')}
+    </div>
+    <h3 style="margin:20px 0 10px">Transaksi</h3>
+    <div class="grid g-stats">
+      ${card(lv(of('batal_cucian').length, 2), 'Cucian dibatalkan', of('batal_cucian').length, rp(sumBy(of('batal_cucian'), (x) => x.total)))}
+      ${card(lv(of('ubah_harga').length, 2), 'Harga diubah', of('ubah_harga').length, 'Selisih ' + rp(sumBy(of('ubah_harga'), (x) => x.selisih)))}
+      ${card(lv(of('mundur_status').length, 3), 'Status dimundurkan', of('mundur_status').length, 'Cek alasannya')}
+      ${card(lv(of('batal_pengeluaran').length + of('ubah_pengeluaran').length), 'Pengeluaran diubah/batal', of('batal_pengeluaran').length + of('ubah_pengeluaran').length, '')}
+      ${card(lv(missing.length), 'Nomor nota hilang', missing.length, missing.slice(0, 3).join(', ') || 'Urut, tidak ada yang hilang')}
+      ${card(lv(lama.length, 5), 'Siap ambil > 7 hari', lama.length, 'Cek fisik ada di rak?')}
+    </div>
+    <h3 style="margin:20px 0 10px">Akses & kebiasaan</h3>
+    <div class="grid g-stats">
+      ${card(lv(of('pin_salah').length + of('pin_terkunci').length * 5, 3), 'PIN admin salah', of('pin_salah').length, of('pin_terkunci').length ? of('pin_terkunci').length + 'x terkunci' : 'Ada yang coba-coba?')}
+      ${card(lv(noPhone, Math.max(3, Math.ceil(ordR.length * 0.3))), 'Cucian tanpa no. HP', noPhone, `dari ${ordR.length} cucian · pelanggan tidak dapat nota WA`)}
+      ${card(lv(noWa, Math.max(3, Math.ceil(ordR.length * 0.3))), 'Nota WA tidak dikirim', noWa, 'Padahal ada no. HP')}
+      ${card(lv(skew.length), 'Jam perangkat tidak cocok', skew.length, 'Jam tablet diubah?')}
+    </div>
+    <div class="card" style="margin-top:14px"><h3>Per kasir</h3>
+      ${Object.keys(per).length ? `<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:13px;margin-top:8px"><tr class="muted"><td>Kasir</td><td>Shift</td><td>Selisih laci</td><td>Batal</td><td>Ubah harga</td><td>Tanpa bayar</td><td>PIN salah</td></tr>
+        ${Object.entries(per).map(([n, q]) => `<tr style="border-top:1px solid var(--border)"><td style="padding:8px 0"><b>${esc(n)}</b></td><td>${q.shift}</td><td style="color:${q.selisih < 0 ? 'var(--bad)' : q.selisih > 0 ? 'var(--info)' : 'var(--ok)'}">${q.selisih ? (q.selisih > 0 ? '+' : '−') + rp(Math.abs(q.selisih)) : 'Pas'}</td><td>${q.batal}</td><td>${q.harga}</td><td>${q.tanpaBayar}</td><td>${q.pinSalah}</td></tr>`).join('')}</table></div>` : '<div class="muted small">Belum ada data.</div>'}</div>
+    <div class="card" style="margin-top:14px"><h3>Jejak aktivitas (${ev.length})</h3><p class="muted small">Tercatat otomatis dan tidak bisa dihapus dari tablet.</p>
+      ${ev.slice(0, 150).map((x) => `<div class="list-row"><div class="info"><b style="color:${RISKY.includes(x.type) || x.type === 'pin_salah' ? 'var(--warn)' : 'var(--text)'}">${esc(AUDIT_LABEL[x.type] || x.type)}</b>
+        <span>${tgl(x.at)} · ${esc(x.by || x.email || '-')}${serverSkewMin(x) > 10 ? ` · <b style="color:var(--bad)">jam perangkat selisih ${serverSkewMin(x)} menit</b>` : ''}<br>${detail(x)}</span></div></div>`).join('') || '<div class="muted small">Belum ada aktivitas.</div>'}</div>`;
+}
+
+/* ---------------- Halaman: Pelanggan ---------------- */
+function viewCustomers() {
+  const stats = {}; Object.values(orders()).filter((o) => !isVoid(o)).forEach((o) => {
+    const s = stats[o.customerId] || (stats[o.customerId] = { n: 0, total: 0, last: '' });
+    s.n++; s.total += Number(o.total) || 0; if (String(o.createdAt) > s.last) s.last = o.createdAt;
+  });
+  let list = Object.values(S.customers);
+  if (S.custQ) { const q = S.custQ.toLowerCase(); list = list.filter((c) => String(c.name).toLowerCase().includes(q) || String(c.phone || '').includes(q)); }
+  list.sort((a, b) => (stats[b.id]?.n || 0) - (stats[a.id]?.n || 0) || String(a.name).localeCompare(String(b.name)));
+  return `<h2>Pelanggan</h2><p class="sub">${Object.keys(S.customers).length} pelanggan tersimpan · otomatis bertambah saat mencatat cucian</p>
+    <input class="search" id="cq" placeholder="Cari nama atau no. HP…" value="${esc(S.custQ)}" autocomplete="off">
+    ${list.length ? `<div class="card">${list.map((c) => { const s = stats[c.id];
+      return `<div class="list-row" role="button" data-cust-detail="${esc(c.id)}" style="cursor:pointer"><div class="info"><b>${esc(c.name)}</b>
+        <span>${esc(c.phone || 'Tanpa no. HP')}${s ? ` · ${s.n}x cuci · terakhir ${tgl(s.last)}` : ''}</span></div>${s ? `<span class="muted small">${rp(s.total)}</span>` : ''}</div>`; }).join('')}</div>`
+    : '<div class="card empty"><b>Belum ada pelanggan</b>Pelanggan tersimpan otomatis saat mencatat cucian masuk.</div>'}
+    <p class="muted small" style="margin-top:10px">Jumlah cuci & total dihitung dari ${RECENT_DAYS} hari terakhir + cucian yang belum diambil.</p>`;
+}
+function customerDetail(id) {
+  const c = S.customers[id]; if (!c) return;
+  const list = Object.values(orders()).filter((o) => o.customerId === id).sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt)));
+  openModal(`<h3>${esc(c.name)}</h3><div class="muted small">${esc(c.phone || 'Tanpa no. HP')}</div>
+    <label class="f">Nama</label><input class="in" id="cName" value="${esc(c.name)}"><label class="f">No. HP / WA</label><input class="in" id="cPhone" inputmode="tel" value="${esc(c.phone || '')}">
+    <label class="f">Catatan pelanggan</label><input class="in" id="cNotes" placeholder="mis. suka pewangi lavender" value="${esc(c.notes || '')}">
+    <h3 style="margin-top:18px;font-size:15px">Riwayat cucian</h3>
+    ${list.length ? list.map((o) => `<div class="list-row" data-order="${esc(o.id)}" role="button" style="cursor:pointer"><div class="info"><b>${esc(o.no)}</b><span>${tgl(o.createdAt)} · ${esc(itemsText(o))}</span></div>
+      <span class="pill st-${o.status}">${STATUS[o.status].label}</span></div>`).join('') : '<div class="muted small">Belum ada riwayat.</div>'}
+    <div class="actions">${S.canWrite ? '<button class="btn outline" data-a="new">+ Cucian baru</button>' : ''}<button class="btn ghost" data-a="close">Tutup</button>${S.canWrite ? '<button class="btn" data-a="save">Simpan</button>' : ''}</div>`,
+  (m) => m.addEventListener('click', async (e) => {
+    const od = e.target.closest('[data-order]'); if (od) { orderDetail(od.dataset.order); return; }
+    const a = e.target.dataset.a; if (!a) return;
+    if (a === 'close') return closeModal();
+    if (a === 'new') return needShift(() => orderForm({ custId: c.id, name: c.name, phone: c.phone }));
+    const name = m.querySelector('#cName').value.trim(); if (!name) return;
+    closeModal();
+    try { await setDoc('customers/' + id, { ...stripId(c), name, phone: m.querySelector('#cPhone').value.trim(), notes: m.querySelector('#cNotes').value.trim() }); toast('Pelanggan disimpan'); }
+    catch (er) { writeErr(er); }
+  }));
+}
+
+/* ---------------- Halaman: Pengaturan ---------------- */
+function viewSettings() {
+  const s = S.settings; const ed = S.canWrite && isOwner();
+  const acct = `<div class="card row" style="margin-bottom:12px"><div style="flex:1"><b>${esc(S.email)}</b><div class="muted small">Masuk sebagai ${isOwner() ? 'Owner' : 'Outlet / Kasir'}</div></div><button class="btn sm ghost" data-act="logout">Keluar</button></div>`;
+  if (!isOwner()) return `<h2>Pengaturan</h2><p class="sub">Harga, kasir, dan PIN hanya bisa diubah owner dari akun Owner.</p>${acct}
+    ${window.MaxxPrinter ? '<div class="card"><h3>Printer</h3><button class="btn sm outline" style="margin-top:10px" data-act="pickPrinter">🖨️ Pilih / ganti printer Bluetooth</button></div>' : ''}
+    <div class="card" style="margin-top:12px"><h3>Daftar harga</h3>${(s.services || []).map((v) => `<div class="sum"><span>${esc(v.name)}</span><span>${rp(v.price)}/${esc(v.unit)}</span></div>`).join('')}</div>`;
+  return `<h2>Pengaturan</h2><p class="sub">Harga layanan, kasir, info nota, keamanan.</p>
+    ${acct}
+    ${String(s.pin) === '1234' ? '<div class="banner">PIN admin masih bawaan (1234). Ganti di bawah supaya staff tidak bisa mengubah harga atau menghapus data.</div>' : ''}
+    <div class="card"><div class="row"><h3>Layanan & harga</h3><span class="spacer"></span>${ed ? '<button class="btn sm outline" data-act="addSvc">+ Layanan</button>' : ''}</div>
+      ${Object.entries(CATS).map(([k, l]) => { const rows = (s.services || []).map((v, i) => [v, i]).filter(([v]) => svcCat(v) === k);
+        return `<details ${k === 'kiloan' ? 'open' : ''} style="margin-top:10px"><summary style="cursor:pointer;font-weight:800;color:var(--pink);padding:6px 0">${l} (${rows.length})</summary>
+        ${rows.map(([v, i]) => `<div class="list-row" ${ed ? `role="button" data-svc-edit="${i}" style="cursor:pointer"` : ''}><div class="info"><b>${esc(v.name)}</b><span>Estimasi ${v.hours >= 24 && v.hours % 24 === 0 ? v.hours / 24 + ' hari' : v.hours + ' jam'}</span></div><b>${rp(v.price)}/${esc(v.unit)}</b></div>`).join('') || '<div class="muted small">Belum ada</div>'}</details>`; }).join('')}</div>
+    <div class="card" style="margin-top:12px"><div class="row"><h3>Kasir</h3><span class="spacer"></span>${ed ? '<button class="btn sm outline" data-act="addKasir">+ Kasir</button>' : ''}</div>
+      ${(s.cashiers || []).length ? s.cashiers.map((c, i) => `<div class="list-row" ${ed ? `role="button" data-kasir-edit="${i}" style="cursor:pointer"` : ''}><div class="info"><b>${esc(c.name)}</b><span style="color:${c.pin ? 'var(--muted)' : 'var(--bad)'}">${c.pin ? 'PIN ✓' : '⚠️ Belum ada PIN, belum bisa mulai shift'}</span></div></div>`).join('') : '<div class="muted small" style="padding:8px 0">Belum ada kasir. Tambahkan nama staff yang bertugas di outlet.</div>'}</div>
+    <div class="card" style="margin-top:12px"><h3>Info di nota & printer</h3>
+      <label class="f">Nama usaha</label><input class="in" id="sName" value="${esc(s.shopName)}" ${ed ? '' : 'disabled'}>
+      <label class="f">Alamat</label><input class="in" id="sAddr" value="${esc(s.address)}" ${ed ? '' : 'disabled'}>
+      <label class="f">No. WA outlet</label><input class="in" id="sPhone" inputmode="tel" value="${esc(s.phone)}" ${ed ? '' : 'disabled'}>
+      ${window.MaxxPrinter ? '<button class="btn sm outline" style="margin-top:12px" data-act="pickPrinter">🖨️ Pilih / ganti printer Bluetooth</button>' : ''}
+      <label class="f">Lebar kertas printer</label><select class="in" id="sPaper" ${ed ? '' : 'disabled'}>${['58', '80'].map((x) => `<option value="${x}" ${String(s.paper || '58') === x ? 'selected' : ''}>${x} mm</option>`).join('')}</select>
+      <label class="f">Pesan di bawah struk</label><input class="in" id="sFooter" value="${esc(s.footer || 'Terima kasih. Simpan struk ini untuk pengambilan cucian.')}" ${ed ? '' : 'disabled'}>
+      ${ed ? '<button class="btn sm" style="margin-top:12px" data-act="saveInfo">Simpan info</button>' : ''}</div>
+    <div class="card" style="margin-top:12px"><h3>Kategori pengeluaran</h3>
+      <label class="f">Satu kategori per baris</label><textarea class="in" id="sCats" rows="6" ${ed ? '' : 'disabled'}>${esc((s.expenseCats || []).join('\n'))}</textarea>
+      ${ed ? '<button class="btn sm" style="margin-top:12px" data-act="saveCats">Simpan kategori</button>' : ''}</div>
+    ${ed ? `<div class="card" style="margin-top:12px"><h3>Keamanan</h3>
+      <label class="f" style="display:flex;gap:10px;align-items:center;color:var(--text)"><input type="checkbox" id="sScale" ${s.requireScalePhoto !== false ? 'checked' : ''} style="width:20px;height:20px"> Wajib foto timbangan untuk cucian kiloan</label>
+      <button class="btn sm" style="margin-top:10px" data-act="saveSec">Simpan</button></div>` : ''}
+    ${ed ? `<div class="card" style="margin-top:12px"><h3>PIN admin</h3><p class="muted small">Dipakai di tablet untuk aksi sensitif: ubah harga, batalkan cucian/pengeluaran, mundurkan status, ambil tanpa bayar. Jangan diberikan ke kasir.</p>
+      <div class="row"><input class="in" id="sPin" inputmode="numeric" maxlength="4" placeholder="PIN baru 4 angka" style="max-width:200px"><button class="btn sm" data-act="savePin">Ganti PIN</button></div></div>` : ''}`;
+}
+async function saveSettings(patch, msg) {
+  if (!isOwner()) { toast('Hanya owner yang bisa mengubah pengaturan'); return; }
+  const body = { ...S.settings, ...patch };
+  try { await setDoc('settings/main', body); S.settings = body; audit('pengaturan', { bagian: Object.keys(patch).join(', '), pesan: msg || '' }); toast(msg || 'Pengaturan disimpan'); render(); } catch (er) { writeErr(er); }
+}
+function serviceForm(i) {
+  const list = [...(S.settings.services || [])]; const v = i === null ? { id: 's' + Date.now(), name: '', cat: 'kiloan', unit: 'kg', price: '', hours: 48 } : list[i];
+  openModal(`<h3>${i === null ? 'Tambah' : 'Ubah'} Layanan</h3>
+    <label class="f">Nama layanan</label><input class="in" id="vName" value="${esc(v.name)}" placeholder="mis. Cuci Setrika">
+    <label class="f">Jenis</label><select class="in" id="vCat">${Object.entries(CATS).map(([k, l]) => `<option value="${k}" ${svcCat(v) === k ? 'selected' : ''}>${l}</option>`).join('')}</select>
+    <label class="f">Satuan</label><select class="in" id="vUnit">${['kg', 'pcs', 'pasang', 'set', 'meter'].map((u) => `<option ${u === v.unit ? 'selected' : ''}>${u}</option>`).join('')}</select>
+    <label class="f">Harga per satuan</label><input class="in" id="vPrice" inputmode="numeric" value="${esc(v.price)}">
+    <label class="f">Estimasi selesai (jam)</label><input class="in" id="vHours" inputmode="numeric" value="${esc(v.hours)}"><div class="muted small">24 = 1 hari, 48 = 2 hari</div>
+    <div class="err" id="vErr"></div>
+    <div class="actions">${i !== null ? '<button class="btn danger" data-a="del">Hapus</button>' : ''}<button class="btn ghost" data-a="cancel">Batal</button><button class="btn" data-a="save">Simpan</button></div>`,
+  (m) => m.addEventListener('click', (e) => {
+    const a = e.target.dataset.a; if (!a) return;
+    if (a === 'cancel') return closeModal();
+    if (a === 'del') { list.splice(i, 1); closeModal(); return saveSettings({ services: list }, 'Layanan dihapus'); }
+    const name = m.querySelector('#vName').value.trim(); const price = Math.round(num(m.querySelector('#vPrice').value));
+    if (!name || price <= 0) { m.querySelector('#vErr').textContent = 'Isi nama dan harga'; return; }
+    const nv = { id: v.id, name, cat: m.querySelector('#vCat').value, unit: m.querySelector('#vUnit').value, price, hours: Math.max(1, Math.round(num(m.querySelector('#vHours').value)) || 48) };
+    if (i === null) list.push(nv); else list[i] = nv;
+    closeModal(); saveSettings({ services: list }, 'Layanan disimpan');
+  }));
+}
+
+function kasirForm(i) {
+  const list = [...(S.settings.cashiers || [])]; const c = i === null ? { id: 'k' + Date.now(), name: '', pin: '' } : list[i];
+  openModal(`<h3>${i === null ? 'Tambah' : 'Ubah'} Kasir</h3>
+    <label class="f">Nama</label><input class="in" id="kN" value="${esc(c.name)}" placeholder="mis. Rina">
+    <label class="f">PIN kasir (wajib, 4 angka)</label><input class="in" id="kP" inputmode="numeric" maxlength="4" value="${esc(c.pin)}">
+    <div class="muted small" style="margin-top:6px">Dipakai kasir saat mulai shift, supaya tidak ada yang memakai nama orang lain. Harus beda dengan PIN admin.</div>
+    <div class="err" id="kE"></div>
+    <div class="actions">${i !== null ? '<button class="btn danger" data-a="del">Hapus</button>' : ''}<button class="btn ghost" data-a="cancel">Batal</button><button class="btn" data-a="save">Simpan</button></div>`,
+  (m) => m.addEventListener('click', (e) => {
+    const a = e.target.dataset.a; if (!a) return; if (a === 'cancel') return closeModal();
+    if (a === 'del') { list.splice(i, 1); closeModal(); return saveSettings({ cashiers: list }, 'Kasir dihapus'); }
+    const name = m.querySelector('#kN').value.trim(); const pin = m.querySelector('#kP').value.trim();
+    if (!name) { m.querySelector('#kE').textContent = 'Isi nama'; return; }
+    if (!/^\d{4}$/.test(pin)) { m.querySelector('#kE').textContent = 'PIN kasir wajib 4 angka'; return; }
+    if (pin === String(S.settings.pin)) { m.querySelector('#kE').textContent = 'PIN kasir tidak boleh sama dengan PIN admin'; return; }
+    if (list.some((x) => x.id !== c.id && x.pin === pin)) { m.querySelector('#kE').textContent = 'PIN ini sudah dipakai kasir lain'; return; }
+    const nc = { id: c.id, name, pin }; if (i === null) list.push(nc); else list[i] = nc;
+    closeModal(); saveSettings({ cashiers: list }, 'Kasir disimpan');
+  }));
+}
+
+/* ---------------- Render ---------------- */
+function render() {
+  renderNav(); renderShiftBtn();
+  let html;
+  if (S.auth === 'out') { $('#nav').innerHTML = ''; $('#fab').style.display = 'none'; $('#shiftBtn').style.display = 'none'; $('#main').innerHTML = viewLogin(); return; }
+  if (S.auth === 'none') { $('#nav').innerHTML = ''; $('#fab').style.display = 'none'; $('#shiftBtn').style.display = 'none';
+    $('#main').innerHTML = `<div class="card empty"><b>Akun belum diberi akses</b>${esc(S.email)} belum terdaftar sebagai Owner atau Outlet.<div style="margin-top:14px"><button class="btn ghost" data-act="logout">Keluar</button></div></div>`; return; }
+  if (!S.db) html = S.offline ? '<div class="card empty"><b>Tidak bisa terhubung</b>Periksa koneksi internet, lalu muat ulang aplikasi.</div>' : '<div class="empty"><b>Memuat data…</b></div>';
+  else if (!S.loaded) html = '<div class="empty"><b>Memuat data…</b></div>';
+  else html = (S.canWrite ? '' : '<div class="banner">Mode lihat saja: perangkat ini tidak bisa mencatat. Login dengan akun pemilik untuk mencatat.</div>') +
+    (S.canWrite && !S.shift && !isOwner() && S.tab !== 'settings' ? '<div class="banner">Belum ada shift berjalan. Ketuk <b>⚠️ Belum mulai shift</b> di atas (atau langsung catat cucian) untuk memilih kasir.</div>' : '') +
+    ({ today: viewToday, orders: viewOrders, kas: viewKas, customers: viewCustomers, settings: viewSettings, audit: () => (isOwner() ? viewAudit() : viewToday()) }[S.tab])();
+  const ae = document.activeElement; const fid = ae && ['q', 'cq'].includes(ae.id) ? ae.id : null; const caret = fid ? ae.selectionStart : 0;
+  $('#main').innerHTML = html;
+  if (fid) { const el = document.getElementById(fid); if (el) { el.focus(); el.setSelectionRange(caret, caret); } }
+}
+$('#main').addEventListener('click', (e) => {
+  const t = e.target;
+  const ph = t.closest('[data-photo]'); if (ph && ph.tagName === 'IMG') { e.stopPropagation(); viewPhoto(ph.dataset.photo); return; }
+  const adv = t.closest('[data-advance]'); if (adv) { e.stopPropagation(); needShift(() => advance(adv.dataset.advance)); return; }
+  const od = t.closest('[data-order]'); if (od) { orderDetail(od.dataset.order); return; }
+  const ex = t.closest('[data-expense]'); if (ex) { if (S.canWrite) askPin('Ubah pengeluaran', () => expenseForm(ex.dataset.expense)); return; }
+  const f = t.closest('[data-filter]'); if (f) { S.filter = f.dataset.filter; render(); return; }
+  const r = t.closest('[data-range]'); if (r) { S.kasRange = r.dataset.range; render(); return; }
+  const dd = t.closest('[data-day]'); if (dd && !dd.disabled) { const n = addDays(S.day, Number(dd.dataset.day)); if (n <= todayKey()) { S.day = n; render(); } return; }
+  const gt = t.closest('[data-goto]'); if (gt) { e.preventDefault(); S.tab = 'orders'; S.filter = gt.dataset.goto; render(); return; }
+  const tg = t.closest('[data-tab-go]'); if (tg) { S.tab = tg.dataset.tabGo; render(); return; }
+  const cd = t.closest('[data-cust-detail]'); if (cd) { customerDetail(cd.dataset.custDetail); return; }
+  const se = t.closest('[data-svc-edit]'); if (se) { serviceForm(Number(se.dataset.svcEdit)); return; }
+  const ke = t.closest('[data-kasir-edit]'); if (ke) { kasirForm(Number(ke.dataset.kasirEdit)); return; }
+  const vf = t.closest('[data-verify]'); if (vf) { const [oid, ix] = vf.dataset.verify.split('|'); verifyPayment(oid, Number(ix), true); return; }
+  const nv = t.closest('[data-noverify]'); if (nv) { const [oid, ix] = nv.dataset.noverify.split('|'); verifyPayment(oid, Number(ix), false); return; }
+  const ar = t.closest('[data-arange]'); if (ar) { S.auditRange = ar.dataset.arange; render(); return; }
+  const act = t.closest('[data-act]'); if (!act) return;
+  const s = S.settings;
+  ({
+    expense: () => needShift(() => expenseForm(null)),
+    pickPrinter: () => { if (window.MaxxPrinter) window.MaxxPrinter.postMessage('__select__'); },
+    logout: () => { if (S.shift && S.role !== 'owner') { toast('Tutup shift dulu sebelum keluar'); return; } window.MaxxBackend.logout().then(() => location.reload()); },
+    doLogin: async () => {
+      const em = $('#lEmail').value.trim(); const pw = $('#lPw').value; const er = $('#lErr');
+      if (!em || !pw) { er.textContent = 'Isi email dan password'; return; }
+      act.disabled = true; act.textContent = 'Masuk…';
+      try { await window.MaxxBackend.login(em, pw); }
+      catch (ex) { act.disabled = false; act.textContent = 'Masuk'; er.textContent = /network/i.test(String(ex && ex.code)) ? 'Tidak ada internet' : 'Email atau password salah'; }
+    },
+    searchOld: async () => {
+      const q = S.q.trim(); const found = {};
+      try {
+        const tries = [S.db.collection('orders').where('no', '==', q.toUpperCase())];
+        if (/\d{6,}/.test(q)) tries.push(S.db.collection('orders').where('phone', '==', q));
+        const custs = Object.values(S.customers).filter((c) => String(c.name).toLowerCase().includes(q.toLowerCase())).slice(0, 10).map((c) => c.id);
+        if (custs.length) tries.push(S.db.collection('orders').where('customerId', 'in', custs).limit(200));
+        for (const qq of tries) (await qq.get()).docs.forEach((d) => { found[d.id] = { id: d.id, ...d.data() }; });
+        S.ordersOld = { ...S.ordersOld, ...found }; S.filter = 'semua'; render();
+        toast(Object.keys(found).length ? Object.keys(found).length + ' nota ditemukan' : 'Tidak ditemukan');
+      } catch (er) { toast('Gagal mencari'); }
+    },
+    addSvc: () => serviceForm(null),
+    addKasir: () => kasirForm(null),
+    saveInfo: () => saveSettings({ shopName: $('#sName').value.trim() || 'MAXX LAUNDRY', address: $('#sAddr').value.trim(), phone: $('#sPhone').value.trim(), paper: $('#sPaper').value, footer: $('#sFooter').value.trim() }),
+    saveCats: () => saveSettings({ expenseCats: $('#sCats').value.split('\n').map((x) => x.trim()).filter(Boolean) }),
+    saveSec: () => saveSettings({ requireScalePhoto: $('#sScale').checked }, 'Pengaturan keamanan disimpan'),
+    auditRange: () => {},
+    savePin: () => { const p = $('#sPin').value.trim(); if (!/^\d{4}$/.test(p)) return toast('PIN harus 4 angka'); if (p === '1234' || /^(\d)\1{3}$/.test(p) || p === '0000' || p === '1111') return toast('PIN terlalu mudah ditebak'); if ((S.settings.cashiers || []).some((c) => c.pin === p)) return toast('PIN admin tidak boleh sama dengan PIN kasir'); saveSettings({ pin: p }, 'PIN admin diganti'); },
+  }[act.dataset.act] || (() => {}))();
+});
+$('#main').addEventListener('input', (e) => {
+  if (e.target.id === 'q') { S.q = e.target.value; render(); }
+  if (e.target.id === 'cq') { S.custQ = e.target.value; render(); }
+});
+// Di dalam aplikasi APK: link WhatsApp dibuka lewat aplikasi WhatsApp.
+document.addEventListener('click', (e) => {
+  const a = e.target.closest && e.target.closest('a[href^="https://wa.me"]');
+  if (a && window.MaxxPrinter && typeof window.MaxxPrinter.postMessage === 'function') { e.preventDefault(); window.MaxxPrinter.postMessage('__open__' + a.href); }
+}, true);
+$('#main').addEventListener('keydown', (e) => { if (e.key === 'Enter' && (e.target.id === 'lPw' || e.target.id === 'lEmail')) { e.preventDefault(); const b = $('[data-act="doLogin"]'); if (b) b.click(); } });
+function viewLogin() {
+  return `<div class="login"><div class="big-logo">MAXX<small>LAUNDRY · LEGAH</small></div>
+    <div class="card" style="margin-top:28px"><h3>Masuk</h3>
+      <label class="f">Email</label><input class="in" id="lEmail" type="email" autocomplete="username" placeholder="email akun">
+      <label class="f">Password</label><input class="in" id="lPw" type="password" autocomplete="current-password">
+      <div class="err" id="lErr"></div>
+      <button class="btn lg" style="margin-top:14px" data-act="doLogin">Masuk</button></div>
+    <p class="muted small" style="text-align:center;margin-top:16px">Tablet outlet: masuk dengan akun Outlet. Owner: akun Owner.</p></div>`;
+}
+$('#main').addEventListener('change', (e) => { if (e.target.id === 'dayPick' && e.target.value) { S.day = e.target.value > todayKey() ? todayKey() : e.target.value; render(); } });
+
+let rsT; window.addEventListener('resize', () => { clearTimeout(rsT); rsT = setTimeout(() => { if (S.tab === 'orders') render(); }, 200); });
+function tick() {
+  const n = new Date(); $('#clock').textContent = `${pad2(n.getHours())}:${pad2(n.getMinutes())}`;
+  $('#clockDate').textContent = keyLong(dkey(n));
+}
+
+/* ---------------- Langganan data ---------------- */
+function waitBackend() {
+  return new Promise((res) => { if (window.MaxxBackend) return res(window.MaxxBackend); window.addEventListener('maxx-backend-ready', () => res(window.MaxxBackend), { once: true }); });
+}
+let subscribed = false;
+async function init() {
+  tick(); setInterval(tick, 15000); render();
+  const failT = setTimeout(() => { if (!window.MaxxBackend) { S.offline = true; render(); } }, 15000);
+  const be = await waitBackend(); clearTimeout(failT);
+  be.onUser((u) => {
+    if (!u) { S.auth = 'out'; render(); return; }
+    S.email = u.email; S.role = u.role;
+    if (u.role === 'none') { S.auth = 'none'; render(); return; }
+    S.auth = 'in';
+    if (!subscribed) { subscribed = true; startData(be); }
+    render();
+  });
+  if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+function startData(be) {
+  const db = be.db; S.db = db; S.assets = be.assets; S.canWrite = true;
+  const timer = setTimeout(() => { if (!S.loaded) { toast('Koneksi lambat, data dimuat dari penyimpanan lokal…'); S.loaded = true; render(); } }, 10000);
+  const onErr = (e) => { console.error(e); if (e && e.code === 'invalid_argument') toast('Akun ini tidak punya izin membaca data. Hubungi owner.'); };
+  const ready = { a: false, r: false };
+  const markReady = () => { if (ready.a && ready.r && !S.loaded) { S.loaded = true; clearTimeout(timer); } render(); };
+  db.collection('orders').where('status', 'in', ['masuk', 'proses', 'siap']).onSnapshot((snap) => {
+    S.ordersActive = {}; snap.docs.forEach((d) => { S.ordersActive[d.id] = { id: d.id, ...d.data() }; }); ready.a = true; markReady();
+  }, onErr);
+  const since = new Date(Date.now() - RECENT_DAYS * 86400000).toISOString();
+  db.collection('orders').where('createdAt', '>=', since).onSnapshot((snap) => {
+    S.ordersRecent = {}; snap.docs.forEach((d) => { S.ordersRecent[d.id] = { id: d.id, ...d.data() }; });
+    // Cucian aktif yang sudah tidak aktif lagi akan hilang dari ordersActive lewat langganannya sendiri.
+    ready.r = true; markReady();
+  }, onErr);
+  db.collection('customers').onSnapshot((snap) => { S.customers = {}; snap.docs.forEach((d) => { S.customers[d.id] = { id: d.id, ...d.data() }; }); render(); }, onErr);
+  db.collection('expenses').where('date', '>=', dkey(new Date(Date.now() - RECENT_DAYS * 86400000))).onSnapshot((snap) => {
+    S.expenses = {}; snap.docs.forEach((d) => { S.expenses[d.id] = { id: d.id, ...d.data() }; }); render();
+  }, onErr);
+  db.collection('shifts').where('startAt', '>=', new Date(Date.now() - 45 * 86400000).toISOString()).onSnapshot((snap) => {
+    S.shifts = {}; snap.docs.forEach((d) => { S.shifts[d.id] = { id: d.id, ...d.data() }; });
+    S.shift = Object.values(S.shifts).filter((x) => !x.endAt).sort((a, b) => String(b.startAt).localeCompare(String(a.startAt)))[0] || null;
+    render();
+  }, onErr);
+  if (isOwner()) db.collection('audit').where('at', '>=', new Date(Date.now() - 62 * 86400000).toISOString()).onSnapshot((snap) => {
+    S.audit = {}; snap.docs.forEach((d) => { S.audit[d.id] = { id: d.id, ...d.data() }; }); renderNav(); if (S.tab === 'audit') render();
+  }, () => {});
+  db.doc('settings/main').onSnapshot((snap) => { if (snap.exists) S.settings = { ...DEFAULT_SETTINGS, ...snap.data() }; render(); }, onErr);
+}
+init();
+</script>
+</body>
+</html>
