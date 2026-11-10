@@ -56,6 +56,8 @@ class _WebShellState extends State<WebShell> {
   late final WebViewController _web;
   bool _loading = true;
   bool _error = false;
+  String? _connectedMac;
+  bool _printing = false;
 
   @override
   void initState() {
@@ -125,6 +127,14 @@ class _WebShellState extends State<WebShell> {
       await _selectPrinter(force: true);
       return;
     }
+    if (msg == '__test__') {
+      // Struk tes singkat: untuk memastikan printer yang dipilih benar.
+      final prefs = await SharedPreferences.getInstance();
+      final name = prefs.getString('printer_name') ?? '-';
+      final txt = '\x1B@\x1Ba\x01\x1BE\x01MAXX LAUNDRY\n\x1BE\x00Tes printer berhasil\nPrinter: $name\n\n\n\n';
+      await _print(txt.codeUnits.map((c) => c & 0x7F).toList());
+      return;
+    }
     await _print(base64Decode(msg));
   }
 
@@ -191,19 +201,42 @@ class _WebShellState extends State<WebShell> {
   }
 
   Future<void> _print(List<int> bytes) async {
-    if (!await _ensureBluetooth()) return;
-    final mac = await _selectPrinter();
-    if (mac == null) return;
-    var connected = await PrintBluetoothThermal.connectionStatus;
-    if (!connected) {
-      connected = await PrintBluetoothThermal.connect(macPrinterAddress: mac);
+    if (_printing) return;
+    _printing = true;
+    try {
+      if (!await _ensureBluetooth()) return;
+      final mac = await _selectPrinter();
+      if (mac == null) return;
+      final prefs = await SharedPreferences.getInstance();
+      final name = prefs.getString('printer_name') ?? mac;
+      // Coba 2x: kalau gagal, putuskan koneksi lalu sambung ulang.
+      for (var attempt = 0; attempt < 2; attempt++) {
+        var connected = await PrintBluetoothThermal.connectionStatus;
+        if (!connected || _connectedMac != mac) {
+          try { await PrintBluetoothThermal.disconnect; } catch (_) {}
+          await Future.delayed(const Duration(milliseconds: 400));
+          connected = await PrintBluetoothThermal.connect(macPrinterAddress: mac);
+          _connectedMac = connected ? mac : null;
+        }
+        if (!connected) {
+          if (attempt == 1) {
+            _snack('Tidak bisa tersambung ke $name. Pastikan printer menyala, dekat, dan tidak sedang tersambung ke HP/komputer lain.');
+          }
+          continue;
+        }
+        final ok = await PrintBluetoothThermal.writeBytes(bytes);
+        if (ok) {
+          _snack('Struk dicetak ✓');
+          return;
+        }
+        try { await PrintBluetoothThermal.disconnect; } catch (_) {}
+        _connectedMac = null;
+        await Future.delayed(const Duration(milliseconds: 600));
+      }
+      _snack('Gagal mencetak ke $name. Coba "Tes printer" di Pengaturan, atau pilih printer lain.');
+    } finally {
+      _printing = false;
     }
-    if (!connected) {
-      _snack('Printer tidak tersambung. Pastikan printer menyala dan dekat.');
-      return;
-    }
-    final ok = await PrintBluetoothThermal.writeBytes(bytes);
-    _snack(ok ? 'Struk dicetak ✓' : 'Gagal mencetak. Coba lagi.');
   }
 
   void _snack(String text) {

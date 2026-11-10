@@ -1311,7 +1311,7 @@ function viewSettings() {
   const s = S.settings; const ed = S.canWrite && isOwner();
   const acct = `<div class="card row" style="margin-bottom:12px"><div style="flex:1"><b>${esc(S.email)}</b><div class="muted small">Masuk sebagai ${isOwner() ? 'Owner' : 'Outlet / Kasir'}</div></div><button class="btn sm ghost" data-act="logout">Keluar</button></div>`;
   if (!isOwner()) return `<h2>Pengaturan</h2><p class="sub">Harga, kasir, dan PIN hanya bisa diubah owner dari akun Owner.</p>${acct}
-    ${window.MaxxPrinter ? '<div class="card"><h3>Printer</h3><button class="btn sm outline" style="margin-top:10px" data-act="pickPrinter">🖨️ Pilih / ganti printer Bluetooth</button></div>' : ''}
+    ${window.MaxxPrinter ? '<div class="card"><h3>Printer</h3><p class="muted small">Pilih printer struk (bukan scanner barcode), lalu tekan Tes printer. Kalau tidak keluar, coba printer lain di daftar.</p><div class="row wrap" style="margin-top:10px"><button class="btn sm outline" data-act="pickPrinter">🖨️ Pilih / ganti printer</button><button class="btn sm" data-act="testPrinter">Tes printer</button></div></div>' : ''}
     <div class="card" style="margin-top:12px"><h3>Daftar harga</h3>${(s.services || []).map((v) => `<div class="sum"><span>${esc(v.name)}</span><span>${rp(v.price)}/${esc(v.unit)}</span></div>`).join('')}</div>`;
   return `<h2>Pengaturan</h2><p class="sub">Harga layanan, kasir, info nota, keamanan.</p>
     ${acct}
@@ -1425,6 +1425,7 @@ $('#main').addEventListener('click', (e) => {
   ({
     expense: () => needShift(() => expenseForm(null)),
     pickPrinter: () => { if (window.MaxxPrinter) window.MaxxPrinter.postMessage('__select__'); },
+    testPrinter: () => { if (window.MaxxPrinter) { window.MaxxPrinter.postMessage('__test__'); toast('Mengirim tes ke printer…'); } },
     logout: () => { if (S.shift && S.role !== 'owner') { toast('Tutup shift dulu sebelum keluar'); return; } window.MaxxBackend.logout().then(() => location.reload()); },
     doLogin: async () => {
       const em = $('#lEmail').value.trim(); const pw = $('#lPw').value; const er = $('#lErr');
